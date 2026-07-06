@@ -1,0 +1,188 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout titulo="Calendario de medicamentos y suplementos">
+  <div class="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+    <!-- Encabezado -->
+    <header class="flex flex-col gap-4">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-moss text-lg text-paper">
+          💊
+        </div>
+        <div>
+          <h1 class="font-display text-xl font-semibold leading-tight text-ink sm:text-2xl">
+            Calendario de tomas
+          </h1>
+          <p class="text-sm text-slate">Registrá tus medicamentos y suplementos, día a día.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-mist bg-white p-3">
+        <div class="flex items-center gap-1.5">
+          <button
+            id="btn-mes-anterior"
+            type="button"
+            aria-label="Mes anterior"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition hover:bg-paper-alt"
+          >
+            ‹
+          </button>
+          <h2 id="mes-titulo" class="min-w-[10rem] text-center font-display text-base font-semibold sm:text-lg">
+            &nbsp;
+          </h2>
+          <button
+            id="btn-mes-siguiente"
+            type="button"
+            aria-label="Mes siguiente"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition hover:bg-paper-alt"
+          >
+            ›
+          </button>
+          <button
+            id="btn-hoy"
+            type="button"
+            class="ml-2 rounded-lg border border-mist px-3 py-1.5 text-xs font-medium text-slate transition hover:border-moss hover:text-moss"
+          >
+            Hoy
+          </button>
+        </div>
+
+        <button
+          id="btn-agregar-item"
+          type="button"
+          class="rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper transition hover:bg-moss-dark"
+        >
+          + Agregar ítem
+        </button>
+      </div>
+
+      <!-- Lista de ítems registrados -->
+      <div>
+        <p class="mb-2 text-xs font-medium uppercase tracking-wider text-slate">Tus ítems</p>
+        <p id="estado-vacio-items" class="text-sm text-slate">
+          Todavía no agregaste ningún medicamento o suplemento. Tocá "+ Agregar ítem" para crear el primero.
+        </p>
+        <div id="lista-items" class="flex flex-wrap gap-2"></div>
+      </div>
+    </header>
+
+    <!-- Calendario -->
+    <main class="rounded-2xl border border-mist bg-white p-3 sm:p-4">
+      <div id="encabezado-dias" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
+      <div id="grilla-calendario" class="mt-1 grid grid-cols-7 gap-1.5 sm:gap-2"></div>
+    </main>
+
+    <footer class="pb-6 text-center text-xs text-slate">
+      Tus datos se guardan únicamente en este navegador (localStorage).
+    </footer>
+  </div>
+
+  <!-- Modal: agregar / editar ítem -->
+  <div id="modal-item" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+    <div class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 id="modal-item-titulo" class="font-display text-lg font-semibold">Agregar ítem</h3>
+        <button
+          id="btn-cerrar-modal-item"
+          type="button"
+          aria-label="Cerrar"
+          class="flex h-8 w-8 items-center justify-center rounded-lg text-slate hover:bg-paper-alt"
+        >
+          ✕
+        </button>
+      </div>
+
+      <form id="form-item" class="flex flex-col gap-4">
+        <div>
+          <label for="item-nombre" class="mb-1.5 block text-sm font-medium text-ink">Nombre</label>
+          <input
+            id="item-nombre"
+            type="text"
+            required
+            placeholder='Ej: "Ibuprofeno 400mg"'
+            class="w-full rounded-lg border border-mist px-3 py-2 text-sm outline-none focus:border-moss"
+          />
+        </div>
+
+        <div>
+          <p class="mb-1.5 block text-sm font-medium text-ink">Categoría</p>
+          <div id="presets-categoria" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div id="seccion-emoji" class="hidden">
+          <p class="mb-1.5 block text-sm font-medium text-ink">Elegí un emoji</p>
+          <div id="picker-emoji" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <div>
+          <p class="mb-1.5 block text-sm font-medium text-ink">Color de la etiqueta</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <div id="picker-color" class="flex flex-wrap gap-2"></div>
+            <input
+              id="color-personalizado"
+              type="color"
+              value="#2F5D53"
+              aria-label="Color personalizado"
+              class="h-8 w-8 cursor-pointer rounded-full border-0 bg-transparent p-0"
+            />
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-1.5 block text-sm font-medium text-ink">Vista previa</p>
+          <span id="vista-previa-tag" class="tag-pill" style="font-size:0.9rem;padding:0.4rem 0.9rem;"></span>
+        </div>
+
+        <div class="mt-2 flex items-center justify-between gap-2">
+          <button
+            id="btn-eliminar-item"
+            type="button"
+            class="hidden rounded-lg border border-clay px-3 py-2 text-sm font-medium text-clay hover:bg-clay/10"
+          >
+            Eliminar
+          </button>
+          <div class="ml-auto flex gap-2">
+            <button
+              id="btn-cancelar-item"
+              type="button"
+              class="rounded-lg border border-mist px-4 py-2 text-sm font-medium text-slate hover:bg-paper-alt"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper hover:bg-moss-dark">
+              Guardar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: tomas del día -->
+  <div id="modal-dia" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+    <div class="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6">
+      <div class="mb-3 flex items-center justify-between gap-3">
+        <h3 id="dia-modal-titulo" class="font-display text-base font-semibold capitalize">&nbsp;</h3>
+        <button
+          id="btn-cerrar-modal-dia"
+          type="button"
+          aria-label="Cerrar"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate hover:bg-paper-alt"
+        >
+          ✕
+        </button>
+      </div>
+
+      <p id="estado-vacio-dia" class="hidden text-sm text-slate">
+        Todavía no tenés ítems para registrar. Cerrá esta ventana y agregá uno con "+ Agregar ítem".
+      </p>
+      <div id="lista-tomas-dia" class="flex flex-col"></div>
+    </div>
+  </div>
+
+  <script>
+    import { iniciarApp } from "../lib/app";
+    iniciarApp();
+  </script>
+</Layout>
