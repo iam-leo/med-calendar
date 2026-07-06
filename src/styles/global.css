@@ -163,3 +163,157 @@ body {
   accent-color: var(--color-moss);
   cursor: pointer;
 }
+
+/* --- Nueva UI de dosis (Phase 1) --- */
+.fila-toma-dosis {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-mist);
+}
+.fila-toma-dosis:last-child {
+  border-bottom: none;
+}
+
+.fila-toma-dosis__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.fila-toma-dosis__total {
+  font-size: 0.75rem;
+  color: var(--color-slate);
+  white-space: nowrap;
+}
+
+.dosis-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.dosis-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.4rem;
+  background-color: var(--color-paper-alt);
+  font-size: 0.8125rem;
+}
+
+.dosis-entry__hora {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-ink);
+  min-width: 3.5rem;
+}
+
+.dosis-entry__cant {
+  color: var(--color-ink);
+}
+
+.dosis-entry__eliminar {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--color-slate);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color 0.12s, background-color 0.12s;
+}
+.dosis-entry__eliminar:hover {
+  color: var(--color-clay);
+  background-color: rgba(201, 123, 90, 0.1);
+}
+
+.dosis-agregar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dosis-agregar__hora-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.dosis-agregar__horas,
+.dosis-agregar__minutos {
+  padding: 0.35rem 0.2rem;
+  border: 1px solid var(--color-mist);
+  border-radius: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-ink);
+  background-color: white;
+  outline: none;
+  cursor: pointer;
+}
+.dosis-agregar__horas:focus,
+.dosis-agregar__minutos:focus {
+  border-color: var(--color-moss);
+}
+
+.dosis-agregar__sep {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-slate);
+  line-height: 1;
+}
+
+.dosis-agregar__cant {
+  width: 3.5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-mist);
+  border-radius: 0.4rem;
+  font-size: 0.8125rem;
+  color: var(--color-ink);
+  background-color: white;
+  outline: none;
+}
+.dosis-agregar__cant:focus {
+  border-color: var(--color-moss);
+}
+
+.dosis-agregar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.4rem;
+  border: none;
+  background-color: var(--color-moss);
+  color: var(--color-paper);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+.dosis-agregar__btn:hover {
+  background-color: var(--color-moss-dark);
+}
+
+.tag-pill__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background-color: rgba(0 0 0 / 0.15);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}

@@ -1,7 +1,8 @@
-import type { EstadoApp, Item, Toma } from "./types";
+import type { Dosis, EstadoApp, Item, Toma } from "./types";
 
 const CLAVE_ITEMS = "med-calendario:items";
 const CLAVE_TOMAS = "med-calendario:tomas";
+const CLAVE_TEMA = "med-calendario:tema";
 
 function leerJSON<T>(clave: string, porDefecto: T): T {
   if (typeof localStorage === "undefined") return porDefecto;
@@ -20,10 +21,18 @@ function escribirJSON<T>(clave: string, valor: T): void {
 }
 
 export function cargarEstado(): EstadoApp {
-  return {
-    items: leerJSON<Item[]>(CLAVE_ITEMS, []),
-    tomas: leerJSON<Toma[]>(CLAVE_TOMAS, []),
-  };
+  const items = leerJSON<Item[]>(CLAVE_ITEMS, []);
+  const tomasCrudo = leerJSON<any[]>(CLAVE_TOMAS, []);
+
+  const tomas: Toma[] = tomasCrudo.map((t) => {
+    if (!t.dosis) {
+      const dosis: Dosis = { id: generarId(), cantidad: 1, hora: "00:00" };
+      return { itemId: t.itemId, fecha: t.fecha, dosis: [dosis] };
+    }
+    return t as Toma;
+  });
+
+  return { items, tomas };
 }
 
 export function guardarItems(items: Item[]): void {
@@ -32,6 +41,14 @@ export function guardarItems(items: Item[]): void {
 
 export function guardarTomas(tomas: Toma[]): void {
   escribirJSON(CLAVE_TOMAS, tomas);
+}
+
+export function cargarTema(): string {
+  return leerJSON<string>(CLAVE_TEMA, "system");
+}
+
+export function guardarTema(tema: string): void {
+  escribirJSON(CLAVE_TEMA, tema);
 }
 
 export function generarId(): string {

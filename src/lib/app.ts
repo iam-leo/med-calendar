@@ -1,5 +1,5 @@
 import type { Item } from "./types";
-import { cargarEstado, guardarItems, guardarTomas, generarId } from "./storage";
+import { cargarEstado, guardarItems, guardarTomas, generarId, cargarTema } from "./storage";
 import { CATEGORIAS_PRESET, EMOJIS_DISPONIBLES, COLORES_DISPONIBLES } from "./presets";
 import { NOMBRES_MES, NOMBRES_DIA_CORTO, generarGrillaMes, aClaveFecha } from "./fechas";
 import { colorTextoLegible, escaparHTML } from "./color";
@@ -66,14 +66,20 @@ export function iniciarApp(): void {
     const celdas = generarGrillaMes(anioVisible, mesVisible);
     grillaCalendario.innerHTML = celdas
       .map((celda) => {
-        const tomasDelDia = estado.tomas.filter((t) => t.fecha === celda.clave);
+        const tomasDelDia = estado.tomas.filter((t) => t.fecha === celda.clave && t.dosis.length > 0);
         const tagsHTML = tomasDelDia
-          .map((t) => estado.items.find((i) => i.id === t.itemId))
-          .filter((item): item is Item => Boolean(item))
-          .map((item) => {
+          .map((t) => {
+            const item = estado.items.find((i) => i.id === t.itemId);
+            if (!item) return null;
+            const totalPildoras = t.dosis.reduce((sum, d) => sum + d.cantidad, 0);
+            return { item, totalPildoras };
+          })
+          .filter((x): x is NonNullable<typeof x> => x !== null)
+          .map(({ item, totalPildoras }) => {
             const colorTexto = colorTextoLegible(item.color);
-            return `<span class="tag-pill" style="background-color:${item.color};color:${colorTexto}" title="${escaparHTML(item.nombre)}">
+            return `<span class="tag-pill" style="background-color:${item.color};color:${colorTexto}" title="${escaparHTML(item.nombre)} — ${totalPildoras} píldora(s)">
                 <span aria-hidden="true">${item.emoji}</span><span class="truncate">${escaparHTML(item.nombre)}</span>
+                ${totalPildoras > 1 ? `<span class="tag-pill__count">×${totalPildoras}</span>` : ""}
               </span>`;
           })
           .join("");
@@ -86,7 +92,7 @@ export function iniciarApp(): void {
           .filter(Boolean)
           .join(" ");
 
-        return `<button type="button" class="${clasesCelda}" data-fecha="${celda.clave}" aria-label="Ver toma del día ${celda.numero}">
+        return `<button type="button" class="${clasesCelda}" data-fecha="${celda.clave}" aria-label="Ver tomas del día ${celda.numero}">
             <span class="celda-dia__numero">${celda.numero}</span>
             <span class="celda-dia__tags">${tagsHTML}</span>
           </button>`;
@@ -255,7 +261,12 @@ export function iniciarApp(): void {
     if (e.target === modalItem) cerrarModalItem();
   });
 
-  // --- Modal de día (marcar tomas) ---
+  // --- Modal de día (gestión de dosis) ---
+  function horaActual(): string {
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  }
+
   function abrirModalDia(clave: string): void {
     fechaSeleccionada = clave;
     const [anio, mes, dia] = clave.split("-").map(Number);
@@ -281,34 +292,122 @@ export function iniciarApp(): void {
       listaTomasDia.innerHTML = "";
       return;
     }
+
+    const [horaDef, minDef] = horaActual().split(":");
+    const horas = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+    const minutos = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"));
+
     listaTomasDia.innerHTML = estado.items
       .map((item) => {
-        const tomado = estado.tomas.some((t) => t.itemId === item.id && t.fecha === fechaSeleccionada);
-        return `<label class="fila-toma">
-            <input type="checkbox" class="fila-toma__check" data-item-id="${item.id}" ${tomado ? "checked" : ""} />
-            <span class="tag-pill" style="background-color:${item.color};color:${colorTextoLegible(item.color)}">
-              <span aria-hidden="true">${item.emoji}</span><span>${escaparHTML(item.nombre)}</span>
-            </span>
-          </label>`;
+        const toma = estado.tomas.find((t) => t.itemId === item.id && t.fecha === fechaSeleccionada);
+        const dosis = (toma?.dosis ?? []).slice().sort((a, b) => a.hora.localeCompare(b.hora));
+        const totalPildoras = dosis.reduce((sum, d) => sum + d.cantidad, 0);
+        const colorTexto = colorTextoLegible(item.color);
+
+        let dosisHTML = "";
+        if (dosis.length > 0) {
+          dosisHTML = `<div class="dosis-lista">${dosis
+            .map(
+              (d) =>
+                `<div class="dosis-entry">
+                  <span class="dosis-entry__hora">${escaparHTML(d.hora)}</span>
+                  <span class="dosis-entry__cant">${d.cantidad} ${d.cantidad === 1 ? "píldora" : "píldoras"}</span>
+                  <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis de las ${d.hora}">✕</button>
+                </div>`
+            )
+            .join("")}</div>`;
+        }
+
+        return `<div class="fila-toma-dosis">
+            <div class="fila-toma-dosis__header">
+              <span class="tag-pill" style="background-color:${item.color};color:${colorTexto}">
+                <span aria-hidden="true">${item.emoji}</span><span>${escaparHTML(item.nombre)}</span>
+              </span>
+              ${totalPildoras > 0 ? `<span class="fila-toma-dosis__total">Total: ${totalPildoras} ${totalPildoras === 1 ? "píldora" : "píldoras"}</span>` : ""}
+            </div>
+            ${dosisHTML}
+            <div class="dosis-agregar">
+              <span class="dosis-agregar__hora-select">
+                <select class="dosis-agregar__horas" data-item-id="${item.id}" aria-label="Hora">
+                  ${horas.map(h => `<option value="${h}"${h === horaDef ? " selected" : ""}>${h}</option>`).join("")}
+                </select>
+                <span class="dosis-agregar__sep">:</span>
+                <select class="dosis-agregar__minutos" data-item-id="${item.id}" aria-label="Minutos">
+                  ${minutos.map(m => `<option value="${m}"${m === minDef ? " selected" : ""}>${m}</option>`).join("")}
+                </select>
+              </span>
+              <input type="number" class="dosis-agregar__cant" value="1" min="1" data-item-id="${item.id}" aria-label="Cantidad de píldoras" />
+              <button type="button" class="dosis-agregar__btn" data-item-id="${item.id}" aria-label="Agregar dosis">+</button>
+            </div>
+          </div>`;
       })
       .join("");
 
-    listaTomasDia.querySelectorAll<HTMLInputElement>("[data-item-id]").forEach((chk) => {
-      chk.addEventListener("change", () => {
+    listaTomasDia.querySelectorAll<HTMLButtonElement>(".dosis-entry__eliminar").forEach((btn) => {
+      btn.addEventListener("click", () => {
         if (!fechaSeleccionada) return;
-        toggleToma(chk.dataset.itemId!, fechaSeleccionada, chk.checked);
+        eliminarDosis(btn.dataset.itemId!, fechaSeleccionada, btn.dataset.dosisId!);
       });
     });
+
+    listaTomasDia.querySelectorAll<HTMLButtonElement>(".dosis-agregar__btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!fechaSeleccionada) return;
+        const itemId = btn.dataset.itemId!;
+        const container = btn.closest(".dosis-agregar")!;
+        const horaSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__horas")!;
+        const minSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__minutos")!;
+        const cantInput = container.querySelector<HTMLInputElement>(".dosis-agregar__cant")!;
+        const hora = `${horaSelect.value}:${minSelect.value}`;
+        const cantidad = parseInt(cantInput.value, 10) || 1;
+        if (!horaSelect.value || !minSelect.value) return;
+        agregarDosis(itemId, fechaSeleccionada, cantidad, hora);
+      });
+    });
+
+    const manejarEnter = (sel: HTMLSelectElement | HTMLInputElement) => {
+      if (!fechaSeleccionada) return;
+      sel.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const itemId = sel.dataset.itemId!;
+          const container = sel.closest(".dosis-agregar")!;
+          const horaSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__horas")!;
+          const minSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__minutos")!;
+          const cantInput = container.querySelector<HTMLInputElement>(".dosis-agregar__cant")!;
+          const hora = `${horaSelect.value}:${minSelect.value}`;
+          const cantidad = parseInt(cantInput.value, 10) || 1;
+          if (!horaSelect.value || !minSelect.value) return;
+          agregarDosis(itemId, fechaSeleccionada, cantidad, hora);
+        }
+      });
+    };
+    listaTomasDia.querySelectorAll<HTMLSelectElement>(".dosis-agregar__horas, .dosis-agregar__minutos").forEach(manejarEnter);
+    listaTomasDia.querySelectorAll<HTMLInputElement>(".dosis-agregar__cant").forEach(manejarEnter);
   }
 
-  function toggleToma(itemId: string, fecha: string, tomado: boolean): void {
-    if (tomado) {
-      estado.tomas.push({ itemId, fecha });
-    } else {
-      estado.tomas = estado.tomas.filter((t) => !(t.itemId === itemId && t.fecha === fecha));
+  function agregarDosis(itemId: string, fecha: string, cantidad: number, hora: string): void {
+    let toma = estado.tomas.find((t) => t.itemId === itemId && t.fecha === fecha);
+    if (!toma) {
+      toma = { itemId, fecha, dosis: [] };
+      estado.tomas.push(toma);
+    }
+    toma.dosis.push({ id: generarId(), cantidad, hora });
+    guardarTomas(estado.tomas);
+    renderGrillaCalendario();
+    renderListaTomasDia();
+  }
+
+  function eliminarDosis(itemId: string, fecha: string, dosisId: string): void {
+    const tomaIdx = estado.tomas.findIndex((t) => t.itemId === itemId && t.fecha === fecha);
+    if (tomaIdx === -1) return;
+    estado.tomas[tomaIdx].dosis = estado.tomas[tomaIdx].dosis.filter((d) => d.id !== dosisId);
+    if (estado.tomas[tomaIdx].dosis.length === 0) {
+      estado.tomas.splice(tomaIdx, 1);
     }
     guardarTomas(estado.tomas);
     renderGrillaCalendario();
+    renderListaTomasDia();
   }
 
   btnCerrarModalDia.addEventListener("click", cerrarModalDia);
