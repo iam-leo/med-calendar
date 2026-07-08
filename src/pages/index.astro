@@ -1,9 +1,22 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Sun from "../icons/Sun.astro";
+import Moon from "../icons/Moon.astro";
 ---
 
 <Layout titulo="Calendario de medicamentos y suplementos">
-  <div class="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+  <div class="relative mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+    <!-- Theme toggle -->
+    <button
+      id="btn-toggle-tema"
+      type="button"
+      aria-label="Cambiar tema"
+      class="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-lg text-slate transition hover:bg-paper-alt sm:right-6 sm:top-10"
+    >
+      <Sun class="theme-sun" size={20} />
+      <Moon class="theme-moon" size={20} />
+    </button>
+
     <!-- Encabezado -->
     <header class="flex flex-col gap-4">
       <div class="flex items-center gap-3">
@@ -18,7 +31,7 @@ import Layout from "../layouts/Layout.astro";
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-mist bg-white p-3">
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-mist bg-surface p-3">
         <div class="flex items-center gap-1.5">
           <button
             id="btn-mes-anterior"
@@ -48,13 +61,15 @@ import Layout from "../layouts/Layout.astro";
           </button>
         </div>
 
-        <button
-          id="btn-agregar-item"
-          type="button"
-          class="rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper transition hover:bg-moss-dark"
-        >
-          + Agregar ítem
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            id="btn-agregar-item"
+            type="button"
+            class="rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper transition hover:bg-moss-dark"
+          >
+            + Agregar ítem
+          </button>
+        </div>
       </div>
 
       <!-- Lista de ítems registrados -->
@@ -68,7 +83,7 @@ import Layout from "../layouts/Layout.astro";
     </header>
 
     <!-- Calendario -->
-    <main class="rounded-2xl border border-mist bg-white p-3 sm:p-4">
+    <main class="rounded-2xl border border-mist bg-surface p-3 sm:p-4">
       <div id="encabezado-dias" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
       <div id="grilla-calendario" class="mt-1 grid grid-cols-7 gap-1.5 sm:gap-2"></div>
     </main>
@@ -79,8 +94,8 @@ import Layout from "../layouts/Layout.astro";
   </div>
 
   <!-- Modal: agregar / editar ítem -->
-  <div id="modal-item" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-    <div class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6">
+  <div id="modal-item" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-surface p-5 shadow-xl sm:p-6">
       <div class="mb-4 flex items-center justify-between">
         <h3 id="modal-item-titulo" class="font-display text-lg font-semibold">Agregar ítem</h3>
         <button
@@ -160,8 +175,8 @@ import Layout from "../layouts/Layout.astro";
   </div>
 
   <!-- Modal: tomas del día -->
-  <div id="modal-dia" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-    <div class="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6">
+  <div id="modal-dia" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div class="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-5 shadow-xl sm:p-6">
       <div class="mb-3 flex items-center justify-between gap-3">
         <h3 id="dia-modal-titulo" class="font-display text-base font-semibold capitalize">&nbsp;</h3>
         <button

@@ -1,5 +1,5 @@
 import type { Item } from "./types";
-import { cargarEstado, guardarItems, guardarTomas, generarId, cargarTema } from "./storage";
+import { cargarEstado, guardarItems, guardarTomas, generarId, cargarTema, guardarTema } from "./storage";
 import { CATEGORIAS_PRESET, EMOJIS_DISPONIBLES, COLORES_DISPONIBLES } from "./presets";
 import { NOMBRES_MES, NOMBRES_DIA_CORTO, generarGrillaMes, aClaveFecha } from "./fechas";
 import { colorTextoLegible, escaparHTML } from "./color";
@@ -27,6 +27,7 @@ export function iniciarApp(): void {
   const btnMesAnterior = $<HTMLButtonElement>("#btn-mes-anterior");
   const btnMesSiguiente = $<HTMLButtonElement>("#btn-mes-siguiente");
   const btnHoy = $<HTMLButtonElement>("#btn-hoy");
+  const btnToggleTema = $<HTMLButtonElement>("#btn-toggle-tema");
   const btnAgregarItem = $<HTMLButtonElement>("#btn-agregar-item");
 
   const modalItem = $<HTMLElement>("#modal-item");
@@ -446,6 +447,29 @@ export function iniciarApp(): void {
     mesVisible = hoy.getMonth();
     render();
   });
+
+  // --- Tema (dark/light) ---
+  function aplicarTema(tema: string): void {
+    if (tema === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }
+
+  btnToggleTema.addEventListener("click", () => {
+    const actual = document.documentElement.getAttribute("data-theme");
+    const nuevo = actual === "dark" ? "light" : "dark";
+    aplicarTema(nuevo);
+    guardarTema(nuevo);
+  });
+
+  const temaGuardado = cargarTema();
+  if (temaGuardado === "dark") {
+    aplicarTema("dark");
+  } else if (temaGuardado === "light") {
+    aplicarTema("light");
+  }
 
   render();
 }

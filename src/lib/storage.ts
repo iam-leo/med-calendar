@@ -44,11 +44,13 @@ export function guardarTomas(tomas: Toma[]): void {
 }
 
 export function cargarTema(): string {
-  return leerJSON<string>(CLAVE_TEMA, "system");
+  if (typeof localStorage === "undefined") return "system";
+  return localStorage.getItem(CLAVE_TEMA) || "system";
 }
 
 export function guardarTema(tema: string): void {
-  escribirJSON(CLAVE_TEMA, tema);
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(CLAVE_TEMA, tema);
 }
 
 export function generarId(): string {
