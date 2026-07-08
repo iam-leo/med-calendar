@@ -100,8 +100,8 @@ import Moon from "../icons/Moon.astro";
   </div>
 
   <!-- Modal: agregar / editar ítem -->
-  <div id="modal-item" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-    <div class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-surface p-5 shadow-xl sm:p-6">
+  <div id="modal-item" class="modal-overlay">
+    <div class="modal-overlay__content w-full max-w-md p-5 sm:p-6">
       <div class="mb-4 flex items-center justify-between">
         <h3 id="modal-item-titulo" class="font-display text-lg font-semibold">Agregar ítem</h3>
         <button
@@ -181,8 +181,8 @@ import Moon from "../icons/Moon.astro";
   </div>
 
   <!-- Modal: tomas del día -->
-  <div id="modal-dia" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-    <div class="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-surface p-5 shadow-xl sm:p-6">
+  <div id="modal-dia" class="modal-overlay">
+    <div class="modal-overlay__content w-full max-w-sm p-5 sm:p-6">
       <div class="mb-3 flex items-center justify-between gap-3">
         <h3 id="dia-modal-titulo" class="font-display text-base font-semibold capitalize">&nbsp;</h3>
         <button

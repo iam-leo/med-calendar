@@ -202,12 +202,12 @@ export function iniciarApp(): void {
     renderPickerColor();
     actualizarVistaPrevia();
 
-    modalItem.classList.remove("hidden");
+    modalItem.classList.add("modal-overlay--open");
     inputNombre.focus();
   }
 
   function cerrarModalItem(): void {
-    modalItem.classList.add("hidden");
+    modalItem.classList.remove("modal-overlay--open");
     formItem.reset();
     itemEditandoId = null;
   }
@@ -279,11 +279,11 @@ export function iniciarApp(): void {
       year: "numeric",
     });
     renderListaTomasDia();
-    modalDia.classList.remove("hidden");
+    modalDia.classList.add("modal-overlay--open");
   }
 
   function cerrarModalDia(): void {
-    modalDia.classList.add("hidden");
+    modalDia.classList.remove("modal-overlay--open");
     fechaSeleccionada = null;
   }
 
