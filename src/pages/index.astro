@@ -74,10 +74,16 @@ import Moon from "../icons/Moon.astro";
 
       <!-- Lista de ítems registrados -->
       <div>
-        <p class="mb-2 text-xs font-medium uppercase tracking-wider text-slate">Tus ítems</p>
-        <p id="estado-vacio-items" class="text-sm text-slate">
-          Todavía no agregaste ningún medicamento o suplemento. Tocá "+ Agregar ítem" para crear el primero.
-        </p>
+        <p class="mb-3 text-xs font-medium uppercase tracking-wider text-slate">Tu botiquín</p>
+        <div id="estado-vacio-items" class="empty-state">
+          <div class="empty-state__grid">
+            <span>💊</span><span>💉</span><span>🌿</span>
+            <span>🧴</span><span>🩹</span><span>🫙</span>
+            <span>💧</span><span>🌸</span><span>🍃</span>
+          </div>
+          <p class="empty-state__title">Todavía no tenés medicamentos registrados</p>
+          <p class="empty-state__desc">Agregá tu primer medicamento o suplemento para empezar a registrar tus tomas diarias.</p>
+        </div>
         <div id="lista-items" class="flex flex-wrap gap-2"></div>
       </div>
     </header>
@@ -189,9 +195,13 @@ import Moon from "../icons/Moon.astro";
         </button>
       </div>
 
-      <p id="estado-vacio-dia" class="hidden text-sm text-slate">
-        Todavía no tenés ítems para registrar. Cerrá esta ventana y agregá uno con "+ Agregar ítem".
-      </p>
+      <div id="estado-vacio-dia" class="hidden empty-state empty-state--compact">
+        <span class="text-2xl">📋</span>
+        <div>
+          <p class="text-sm font-medium text-ink">Tu botiquín está vacío</p>
+          <p class="text-xs text-slate">Agregá un medicamento o suplemento desde el calendario para empezar a registrar.</p>
+        </div>
+      </div>
       <div id="lista-tomas-dia" class="flex flex-col"></div>
     </div>
   </div>
