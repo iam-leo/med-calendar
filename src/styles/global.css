@@ -8,7 +8,7 @@
   --color-moss-dark: #234840;
   --color-mist: #dce6e3;
   --color-clay: #c97b5a;
-  --color-slate: #5b6b68;
+  --color-slate: #556360;
   --color-surface: #ffffff;
 
   --font-display: "Fraunces", ui-serif, Georgia, serif;
@@ -71,6 +71,10 @@ h1, h2, h3, h4, h5, h6,
 }
 .tag-pill--chip:hover {
   transform: translateY(-1px);
+}
+.tag-pill--chip:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
 }
 
 /* --- Celdas del calendario --- */
@@ -142,6 +146,10 @@ h1, h2, h3, h4, h5, h6,
   border-color: var(--color-moss);
   background-color: var(--color-paper-alt);
 }
+.preset-btn:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 1px;
+}
 
 .picker-emoji__btn {
   display: inline-flex;
@@ -154,6 +162,10 @@ h1, h2, h3, h4, h5, h6,
   border: 1px solid var(--color-mist);
   background-color: var(--color-surface);
 }
+.picker-emoji__btn:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
+}
 .picker-emoji__btn--activo {
   border-color: var(--color-moss);
   background-color: var(--color-mist);
@@ -165,6 +177,10 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 9999px;
   border: 2px solid var(--color-surface);
   box-shadow: 0 0 0 1px var(--color-mist);
+}
+.picker-color__btn:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
 }
 .picker-color__btn--activo {
   box-shadow: 0 0 0 2px var(--color-ink);
@@ -258,6 +274,10 @@ h1, h2, h3, h4, h5, h6,
   color: var(--color-clay);
   background-color: rgba(201, 123, 90, 0.1);
 }
+.dosis-entry__eliminar:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 1px;
+}
 
 .dosis-agregar {
   display: flex;
@@ -287,6 +307,11 @@ h1, h2, h3, h4, h5, h6,
 .dosis-agregar__minutos:focus {
   border-color: var(--color-moss);
 }
+.dosis-agregar__horas:focus-visible,
+.dosis-agregar__minutos:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 1px;
+}
 
 .dosis-agregar__sep {
   font-family: var(--font-mono);
@@ -308,6 +333,10 @@ h1, h2, h3, h4, h5, h6,
 .dosis-agregar__cant:focus {
   border-color: var(--color-moss);
 }
+.dosis-agregar__cant:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 1px;
+}
 
 .dosis-agregar__btn {
   display: inline-flex;
@@ -326,6 +355,10 @@ h1, h2, h3, h4, h5, h6,
 }
 .dosis-agregar__btn:hover {
   background-color: var(--color-moss-dark);
+}
+.dosis-agregar__btn:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
 }
 
 .tag-pill__count {
@@ -440,6 +473,10 @@ h1, h2, h3, h4, h5, h6,
 .btn:active {
   transform: translateY(0);
 }
+.btn:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
+}
 
 .celda-dia {
   transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
@@ -471,6 +508,18 @@ h1, h2, h3, h4, h5, h6,
 }
 .preset-btn:hover {
   transform: translateY(-1px);
+}
+
+/* --- Global focus-visible fallback --- */
+:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
+}
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* --- Reduced motion --- */

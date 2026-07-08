@@ -37,9 +37,9 @@ import Moon from "../icons/Moon.astro";
             id="btn-mes-anterior"
             type="button"
             aria-label="Mes anterior"
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition hover:bg-paper-alt"
+            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist"
           >
-            ‹
+            <span aria-hidden="true" class="text-lg">‹</span>
           </button>
           <h2 id="mes-titulo" class="min-w-[10rem] text-center font-display text-base font-semibold sm:text-lg">
             &nbsp;
@@ -48,9 +48,9 @@ import Moon from "../icons/Moon.astro";
             id="btn-mes-siguiente"
             type="button"
             aria-label="Mes siguiente"
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition hover:bg-paper-alt"
+            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist"
           >
-            ›
+            <span aria-hidden="true" class="text-lg">›</span>
           </button>
           <button
             id="btn-hoy"
@@ -100,7 +100,7 @@ import Moon from "../icons/Moon.astro";
   </div>
 
   <!-- Modal: agregar / editar ítem -->
-  <div id="modal-item" class="modal-overlay">
+  <div id="modal-item" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-item-titulo">
     <div class="modal-overlay__content w-full max-w-md p-5 sm:p-6">
       <div class="mb-4 flex items-center justify-between">
         <h3 id="modal-item-titulo" class="font-display text-lg font-semibold">Agregar ítem</h3>
@@ -110,7 +110,7 @@ import Moon from "../icons/Moon.astro";
           aria-label="Cerrar"
           class="flex h-8 w-8 items-center justify-center rounded-lg text-slate hover:bg-paper-alt"
         >
-          ✕
+          <span aria-hidden="true">✕</span>
         </button>
       </div>
 
@@ -181,7 +181,7 @@ import Moon from "../icons/Moon.astro";
   </div>
 
   <!-- Modal: tomas del día -->
-  <div id="modal-dia" class="modal-overlay">
+  <div id="modal-dia" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="dia-modal-titulo">
     <div class="modal-overlay__content w-full max-w-sm p-5 sm:p-6">
       <div class="mb-3 flex items-center justify-between gap-3">
         <h3 id="dia-modal-titulo" class="font-display text-base font-semibold capitalize">&nbsp;</h3>
@@ -191,7 +191,7 @@ import Moon from "../icons/Moon.astro";
           aria-label="Cerrar"
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate hover:bg-paper-alt"
         >
-          ✕
+          <span aria-hidden="true">✕</span>
         </button>
       </div>
 

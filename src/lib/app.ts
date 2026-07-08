@@ -110,7 +110,7 @@ export function iniciarApp(): void {
     listaItems.innerHTML = estado.items
       .map((item) => {
         const colorTexto = colorTextoLegible(item.color);
-        return `<button type="button" class="tag-pill tag-pill--chip" style="background-color:${item.color};color:${colorTexto}" data-item-id="${item.id}">
+        return `<button type="button" class="tag-pill tag-pill--chip" style="background-color:${item.color};color:${colorTexto}" data-item-id="${item.id}" aria-label="Editar ${escaparHTML(item.nombre)}">
             <span aria-hidden="true">${item.emoji}</span><span>${escaparHTML(item.nombre)}</span>
           </button>`;
       })
@@ -452,8 +452,10 @@ export function iniciarApp(): void {
   function aplicarTema(tema: string): void {
     if (tema === "dark") {
       document.documentElement.setAttribute("data-theme", "dark");
+      btnToggleTema.setAttribute("aria-pressed", "true");
     } else {
       document.documentElement.removeAttribute("data-theme");
+      btnToggleTema.setAttribute("aria-pressed", "false");
     }
   }
 
