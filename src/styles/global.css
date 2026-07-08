@@ -242,6 +242,29 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 0.4rem;
   background-color: var(--color-paper-alt);
   font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+.dosis-entry:hover {
+  background-color: var(--color-mist);
+}
+.dosis-entry--editing {
+  cursor: default;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-moss);
+  padding: 0.35rem 0.5rem;
+}
+.dosis-entry--editing:hover {
+  background-color: var(--color-surface);
+}
+.dosis-entry--editing .dosis-agregar__horas,
+.dosis-entry--editing .dosis-agregar__minutos,
+.dosis-entry--editing .dosis-agregar__cant {
+  padding: 0.2rem;
+  font-size: 0.75rem;
+}
+.dosis-entry--editing .dosis-agregar__cant {
+  width: 3rem;
 }
 
 .dosis-entry__hora {
@@ -275,6 +298,31 @@ h1, h2, h3, h4, h5, h6,
   background-color: rgba(201, 123, 90, 0.1);
 }
 .dosis-entry__eliminar:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 1px;
+}
+
+.dosis-entry__guardar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--color-moss);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.12s, background-color 0.12s, transform 0.12s;
+}
+.dosis-entry__guardar:hover {
+  color: var(--color-paper);
+  background-color: var(--color-moss);
+  transform: scale(1.15);
+}
+.dosis-entry__guardar:focus-visible {
   outline: 2px solid var(--color-moss);
   outline-offset: 1px;
 }

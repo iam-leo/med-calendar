@@ -13,6 +13,7 @@ export function iniciarApp(): void {
 
   let fechaSeleccionada: string | null = null;
   let itemEditandoId: string | null = null;
+  let dosisEditandoId: string | null = null;
   let emojiSeleccionado = CATEGORIAS_PRESET[0].emoji;
   let colorSeleccionado = CATEGORIAS_PRESET[0].colorSugerido;
 
@@ -285,6 +286,7 @@ export function iniciarApp(): void {
   function cerrarModalDia(): void {
     modalDia.classList.remove("modal-overlay--open");
     fechaSeleccionada = null;
+    dosisEditandoId = null;
   }
 
   function renderListaTomasDia(): void {
@@ -308,14 +310,30 @@ export function iniciarApp(): void {
         let dosisHTML = "";
         if (dosis.length > 0) {
           dosisHTML = `<div class="dosis-lista">${dosis
-            .map(
-              (d) =>
-                `<div class="dosis-entry">
-                  <span class="dosis-entry__hora">${escaparHTML(d.hora)}</span>
-                  <span class="dosis-entry__cant">${d.cantidad} ${d.cantidad === 1 ? "píldora" : "píldoras"}</span>
-                  <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis de las ${d.hora}">✕</button>
-                </div>`
-            )
+            .map((d) => {
+              if (d.id === dosisEditandoId) {
+                const [h, m] = d.hora.split(":");
+                return `<div class="dosis-entry dosis-entry--editing" data-item-id="${item.id}" data-dosis-id="${d.id}">
+                  <span class="dosis-agregar__hora-select">
+                    <select class="dosis-agregar__horas" aria-label="Hora">
+                      ${horas.map(opt => `<option value="${opt}"${opt === h ? " selected" : ""}>${opt}</option>`).join("")}
+                    </select>
+                    <span class="dosis-agregar__sep">:</span>
+                    <select class="dosis-agregar__minutos" aria-label="Minutos">
+                      ${minutos.map(opt => `<option value="${opt}"${opt === m ? " selected" : ""}>${opt}</option>`).join("")}
+                    </select>
+                  </span>
+                  <input type="number" class="dosis-agregar__cant" value="${d.cantidad}" min="1" aria-label="Cantidad de píldoras" />
+                  <button type="button" class="dosis-entry__guardar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Guardar dosis">✓</button>
+                  <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis">✕</button>
+                </div>`;
+              }
+              return `<div class="dosis-entry" data-item-id="${item.id}" data-dosis-id="${d.id}">
+                <span class="dosis-entry__hora">${escaparHTML(d.hora)}</span>
+                <span class="dosis-entry__cant">${d.cantidad} ${d.cantidad === 1 ? "píldora" : "píldoras"}</span>
+                <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis de las ${d.hora}">✕</button>
+              </div>`;
+            })
             .join("")}</div>`;
         }
 
@@ -345,9 +363,33 @@ export function iniciarApp(): void {
       .join("");
 
     listaTomasDia.querySelectorAll<HTMLButtonElement>(".dosis-entry__eliminar").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         if (!fechaSeleccionada) return;
         eliminarDosis(btn.dataset.itemId!, fechaSeleccionada, btn.dataset.dosisId!);
+      });
+    });
+
+    listaTomasDia.querySelectorAll<HTMLElement>(".dosis-entry:not(.dosis-entry--editing)").forEach((entry) => {
+      entry.addEventListener("click", (e) => {
+        if ((e.target as HTMLElement).closest(".dosis-entry__eliminar")) return;
+        const dosisId = entry.dataset.dosisId;
+        if (dosisId) entrarEditarDosis(dosisId);
+      });
+    });
+
+    listaTomasDia.querySelectorAll<HTMLButtonElement>(".dosis-entry__guardar").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const dosisId = btn.dataset.dosisId;
+        const itemId = btn.dataset.itemId;
+        if (!dosisId || !itemId || !fechaSeleccionada) return;
+        const entry = btn.closest(".dosis-entry")!;
+        const horaSelect = entry.querySelector<HTMLSelectElement>(".dosis-agregar__horas")!;
+        const minSelect = entry.querySelector<HTMLSelectElement>(".dosis-agregar__minutos")!;
+        const cantInput = entry.querySelector<HTMLInputElement>(".dosis-agregar__cant")!;
+        const hora = `${horaSelect.value}:${minSelect.value}`;
+        const cantidad = parseInt(cantInput.value, 10) || 1;
+        guardarDosisEditada(itemId, fechaSeleccionada, dosisId, cantidad, hora);
       });
     });
 
@@ -385,6 +427,19 @@ export function iniciarApp(): void {
     };
     listaTomasDia.querySelectorAll<HTMLSelectElement>(".dosis-agregar__horas, .dosis-agregar__minutos").forEach(manejarEnter);
     listaTomasDia.querySelectorAll<HTMLInputElement>(".dosis-agregar__cant").forEach(manejarEnter);
+
+    const manejarEnterEditar = (el: HTMLElement) => {
+      el.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const entry = el.closest(".dosis-entry--editing") as HTMLElement;
+          if (!entry) return;
+          const guardarBtn = entry.querySelector<HTMLButtonElement>(".dosis-entry__guardar");
+          if (guardarBtn) guardarBtn.click();
+        }
+      });
+    };
+    listaTomasDia.querySelectorAll<HTMLElement>(".dosis-entry--editing .dosis-agregar__horas, .dosis-entry--editing .dosis-agregar__minutos, .dosis-entry--editing .dosis-agregar__cant").forEach(manejarEnterEditar);
   }
 
   function agregarDosis(itemId: string, fecha: string, cantidad: number, hora: string): void {
@@ -407,6 +462,24 @@ export function iniciarApp(): void {
       estado.tomas.splice(tomaIdx, 1);
     }
     guardarTomas(estado.tomas);
+    renderGrillaCalendario();
+    renderListaTomasDia();
+  }
+
+  function entrarEditarDosis(dosisId: string): void {
+    dosisEditandoId = dosisId;
+    renderListaTomasDia();
+  }
+
+  function guardarDosisEditada(itemId: string, fecha: string, dosisId: string, cantidad: number, hora: string): void {
+    const toma = estado.tomas.find((t) => t.itemId === itemId && t.fecha === fecha);
+    if (!toma) return;
+    const dosis = toma.dosis.find((d) => d.id === dosisId);
+    if (!dosis) return;
+    dosis.cantidad = cantidad;
+    dosis.hora = hora;
+    guardarTomas(estado.tomas);
+    dosisEditandoId = null;
     renderGrillaCalendario();
     renderListaTomasDia();
   }
