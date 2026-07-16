@@ -14,6 +14,7 @@ export function iniciarApp(): void {
   let fechaSeleccionada: string | null = null;
   let itemEditandoId: string | null = null;
   let dosisEditandoId: string | null = null;
+  let itemModalDesdeDia: string | null = null;
   let emojiSeleccionado = CATEGORIAS_PRESET[0].emoji;
   let colorSeleccionado = CATEGORIAS_PRESET[0].colorSugerido;
 
@@ -211,6 +212,10 @@ export function iniciarApp(): void {
     modalItem.classList.remove("modal-overlay--open");
     formItem.reset();
     itemEditandoId = null;
+    if (itemModalDesdeDia) {
+      abrirModalDia(itemModalDesdeDia);
+      itemModalDesdeDia = null;
+    }
   }
 
   formItem.addEventListener("submit", (evento) => {
@@ -238,6 +243,7 @@ export function iniciarApp(): void {
     guardarItems(estado.items);
     cerrarModalItem();
     render();
+    if (fechaSeleccionada) renderListaTomasDia();
   });
 
   btnEliminarItem.addEventListener("click", () => {
@@ -248,6 +254,7 @@ export function iniciarApp(): void {
     guardarTomas(estado.tomas);
     cerrarModalItem();
     render();
+    if (fechaSeleccionada) renderListaTomasDia();
   });
 
   inputNombre.addEventListener("input", actualizarVistaPrevia);
@@ -339,9 +346,12 @@ export function iniciarApp(): void {
 
         return `<div class="fila-toma-dosis">
             <div class="fila-toma-dosis__header">
-              <span class="tag-pill" style="background-color:${item.color};color:${colorTexto}">
-                <span aria-hidden="true">${item.emoji}</span><span>${escaparHTML(item.nombre)}</span>
-              </span>
+              <div class="fila-toma-dosis__info">
+                <span class="tag-pill" style="background-color:${item.color};color:${colorTexto}">
+                  <span aria-hidden="true">${item.emoji}</span><span>${escaparHTML(item.nombre)}</span>
+                </span>
+                <button type="button" class="fila-toma-dosis__editar" data-item-id="${item.id}" aria-label="Editar ${escaparHTML(item.nombre)}">✎</button>
+              </div>
               ${totalPildoras > 0 ? `<span class="fila-toma-dosis__total">Total: ${totalPildoras} ${totalPildoras === 1 ? "píldora" : "píldoras"}</span>` : ""}
             </div>
             ${dosisHTML}
@@ -390,6 +400,16 @@ export function iniciarApp(): void {
         const hora = `${horaSelect.value}:${minSelect.value}`;
         const cantidad = parseInt(cantInput.value, 10) || 1;
         guardarDosisEditada(itemId, fechaSeleccionada, dosisId, cantidad, hora);
+      });
+    });
+
+    listaTomasDia.querySelectorAll<HTMLButtonElement>(".fila-toma-dosis__editar").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = estado.items.find((i) => i.id === btn.dataset.itemId);
+        if (!item) return;
+        itemModalDesdeDia = fechaSeleccionada;
+        cerrarModalDia();
+        abrirModalItem(item);
       });
     });
 
@@ -491,8 +511,12 @@ export function iniciarApp(): void {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      cerrarModalDia();
-      cerrarModalItem();
+      if (itemModalDesdeDia) {
+        cerrarModalItem();
+      } else {
+        cerrarModalDia();
+        cerrarModalItem();
+      }
     }
   });
 
