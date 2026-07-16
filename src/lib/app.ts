@@ -52,6 +52,9 @@ export function iniciarApp(): void {
   const estadoVacioDia = $<HTMLElement>("#estado-vacio-dia");
   const btnCerrarModalDia = $<HTMLButtonElement>("#btn-cerrar-modal-dia");
 
+  const seccionEstadisticas = $<HTMLElement>("#seccion-estadisticas");
+  const grillaEstadisticas = $<HTMLElement>("#grilla-estadisticas");
+
   // --- Días de la semana (encabezado) ---
   const encabezadoDias = $<HTMLElement>("#encabezado-dias");
   encabezadoDias.innerHTML = NOMBRES_DIA_CORTO.map(
@@ -63,6 +66,7 @@ export function iniciarApp(): void {
     mesTitulo.textContent = `${NOMBRES_MES[mesVisible]} ${anioVisible}`;
     renderGrillaCalendario();
     renderListaItems();
+    renderEstadisticas();
   }
 
   function renderGrillaCalendario(): void {
@@ -124,6 +128,77 @@ export function iniciarApp(): void {
         if (item) abrirModalItem(item);
       });
     });
+  }
+
+  // --- Estadísticas ---
+  function renderEstadisticas(): void {
+    const totalItems = estado.items.length;
+    const tieneDatos = estado.tomas.some((t) => t.dosis.length > 0);
+
+    if (totalItems === 0 || !tieneDatos) {
+      seccionEstadisticas.classList.add("hidden");
+      return;
+    }
+    seccionEstadisticas.classList.remove("hidden");
+
+    const tomasPorFecha = new Map<string, number>();
+    const itemsActivos = new Set<string>();
+    let totalDosis = 0;
+    let dosisMes = 0;
+    const prefijoMes = `${anioVisible}-${String(mesVisible + 1).padStart(2, "0")}`;
+
+    for (const toma of estado.tomas) {
+      if (toma.dosis.length === 0) continue;
+      itemsActivos.add(toma.itemId);
+      const sum = toma.dosis.reduce((s, d) => s + d.cantidad, 0);
+      totalDosis += sum;
+      tomasPorFecha.set(toma.fecha, (tomasPorFecha.get(toma.fecha) || 0) + sum);
+      if (toma.fecha.startsWith(prefijoMes)) {
+        dosisMes += sum;
+      }
+    }
+
+    // Racha actual: días consecutivos con dosis desde hoy hacia atrás
+    let racha = 0;
+    const hoy = new Date();
+    for (let i = 0; ; i++) {
+      const f = new Date(hoy);
+      f.setDate(f.getDate() - i);
+      const clave = `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}-${String(f.getDate()).padStart(2, "0")}`;
+      if (tomasPorFecha.has(clave)) {
+        racha++;
+      } else {
+        break;
+      }
+    }
+
+    // Cumplimiento del mes
+    const totalDiasMes = new Date(anioVisible, mesVisible + 1, 0).getDate();
+    const diasConActividad = new Set<string>();
+    for (const toma of estado.tomas) {
+      if (toma.dosis.length > 0 && toma.fecha.startsWith(prefijoMes)) {
+        diasConActividad.add(toma.fecha);
+      }
+    }
+    const cumplimiento = Math.round((diasConActividad.size / totalDiasMes) * 100);
+
+    const estadisticas = [
+      { label: "Racha actual", valor: `${racha} ${racha === 1 ? "día" : "días"}`, icono: "🔥" },
+      { label: "Tomas del mes", valor: String(dosisMes), icono: "📅" },
+      { label: "Medicamentos activos", valor: String(itemsActivos.size), icono: "🧴" },
+      { label: "Cumplimiento", valor: `${cumplimiento}%`, icono: "📊" },
+    ];
+
+    grillaEstadisticas.innerHTML = estadisticas
+      .map(
+        (e) =>
+          `<div class="stat-card">
+            <span class="stat-card__icon">${e.icono}</span>
+            <span class="stat-card__valor">${e.valor}</span>
+            <span class="stat-card__label">${e.label}</span>
+          </div>`
+      )
+      .join("");
   }
 
   // --- Modal de ítem (crear/editar) ---
@@ -472,6 +547,7 @@ export function iniciarApp(): void {
     guardarTomas(estado.tomas);
     renderGrillaCalendario();
     renderListaTomasDia();
+    renderEstadisticas();
   }
 
   function eliminarDosis(itemId: string, fecha: string, dosisId: string): void {
@@ -484,6 +560,7 @@ export function iniciarApp(): void {
     guardarTomas(estado.tomas);
     renderGrillaCalendario();
     renderListaTomasDia();
+    renderEstadisticas();
   }
 
   function entrarEditarDosis(dosisId: string): void {
@@ -502,6 +579,7 @@ export function iniciarApp(): void {
     dosisEditandoId = null;
     renderGrillaCalendario();
     renderListaTomasDia();
+    renderEstadisticas();
   }
 
   btnCerrarModalDia.addEventListener("click", cerrarModalDia);
