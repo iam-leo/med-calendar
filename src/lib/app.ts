@@ -51,6 +51,7 @@ export function iniciarApp(): void {
   const listaTomasDia = $<HTMLElement>("#lista-tomas-dia");
   const estadoVacioDia = $<HTMLElement>("#estado-vacio-dia");
   const btnCerrarModalDia = $<HTMLButtonElement>("#btn-cerrar-modal-dia");
+  const btnAgregarDesdeVacio = $<HTMLButtonElement>("#btn-agregar-desde-vacio");
 
   const seccionEstadisticas = $<HTMLElement>("#seccion-estadisticas");
   const grillaEstadisticas = $<HTMLElement>("#grilla-estadisticas");
@@ -585,6 +586,12 @@ export function iniciarApp(): void {
   btnCerrarModalDia.addEventListener("click", cerrarModalDia);
   modalDia.addEventListener("click", (e) => {
     if (e.target === modalDia) cerrarModalDia();
+  });
+
+  btnAgregarDesdeVacio.addEventListener("click", () => {
+    itemModalDesdeDia = fechaSeleccionada;
+    cerrarModalDia();
+    abrirModalItem();
   });
 
   document.addEventListener("keydown", (e) => {
