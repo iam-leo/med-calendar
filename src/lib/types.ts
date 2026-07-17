@@ -18,7 +18,7 @@ export interface Item {
 /** Una dosis individual dentro de una toma. */
 export interface Dosis {
   id: string;
-  /** Número de píldoras/unidades tomadas */
+  /** Número de pastillas/unidades tomadas */
   cantidad: number;
   /** Hora en formato "HH:mm" (24h) */
   hora: string;

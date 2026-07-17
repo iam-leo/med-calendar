@@ -102,7 +102,7 @@ export function iniciarApp(): void {
           .filter((x): x is NonNullable<typeof x> => x !== null)
           .map(({ item, totalPildoras }) => {
             const colorTexto = colorTextoLegible(item.color);
-            return `<span class="tag-pill" style="background-color:${item.color};color:${colorTexto}" title="${escaparHTML(item.nombre)} — ${totalPildoras} píldora(s)">
+            return `<span class="tag-pill" style="background-color:${item.color};color:${colorTexto}" title="${escaparHTML(item.nombre)} — ${totalPildoras} pastilla(s)">
                 <span aria-hidden="true">${item.emoji}</span><span class="truncate">${escaparHTML(item.nombre)}</span>
                 ${totalPildoras > 1 ? `<span class="tag-pill__count">×${totalPildoras}</span>` : ""}
               </span>`;
@@ -487,7 +487,28 @@ export function iniciarApp(): void {
     const horas = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
     const minutos = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"));
 
-    container.innerHTML = estado.items
+    // Formulario unificado: selector de medicamento + hora + cantidad
+    let html = `<div class="dosis-agregar-unificado">
+      <select data-item-select class="dosis-agregar__item-select" aria-label="Seleccionar medicamento">
+        <option value="">Seleccionar medicamento</option>
+        ${estado.items.map(item => `<option value="${item.id}">${item.emoji} ${escaparHTML(item.nombre)}</option>`).join("")}
+      </select>
+      <span class="dosis-agregar__hora-select">
+        <select class="dosis-agregar__horas" aria-label="Hora" disabled>
+          ${horas.map(h => `<option value="${h}"${h === horaDef ? " selected" : ""}>${h}</option>`).join("")}
+        </select>
+        <span class="dosis-agregar__sep">:</span>
+        <select class="dosis-agregar__minutos" aria-label="Minutos" disabled>
+          ${minutos.map(m => `<option value="${m}"${m === minDef ? " selected" : ""}>${m}</option>`).join("")}
+        </select>
+      </span>
+      <span class="dosis-agregar__label">Cantidad</span>
+      <input type="number" class="dosis-agregar__cant" value="1" min="1" disabled />
+      <button type="button" class="dosis-agregar__btn" disabled>+</button>
+    </div>`;
+
+    // Cada ítem con sus dosis existentes (sin formulario de agregar)
+    html += estado.items
       .map((item) => {
         const toma = estado.tomas.find((t) => t.itemId === item.id && t.fecha === fechaSeleccionada);
         const dosis = (toma?.dosis ?? []).slice().sort((a, b) => a.hora.localeCompare(b.hora));
@@ -510,14 +531,14 @@ export function iniciarApp(): void {
                       ${minutos.map(opt => `<option value="${opt}"${opt === m ? " selected" : ""}>${opt}</option>`).join("")}
                     </select>
                   </span>
-                  <input type="number" class="dosis-agregar__cant" value="${d.cantidad}" min="1" aria-label="Cantidad de píldoras" />
+                  <input type="number" class="dosis-agregar__cant" value="${d.cantidad}" min="1" aria-label="Cantidad de pastillas" />
                   <button type="button" class="dosis-entry__guardar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Guardar dosis">✓</button>
                   <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis">✕</button>
                 </div>`;
               }
               return `<div class="dosis-entry" data-item-id="${item.id}" data-dosis-id="${d.id}">
                 <span class="dosis-entry__hora">${escaparHTML(d.hora)}</span>
-                <span class="dosis-entry__cant">${d.cantidad} ${d.cantidad === 1 ? "píldora" : "píldoras"}</span>
+                <span class="dosis-entry__cant">${d.cantidad} ${d.cantidad === 1 ? "pastilla" : "pastillas"}</span>
                 <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis de las ${d.hora}">✕</button>
               </div>`;
             })
@@ -532,26 +553,18 @@ export function iniciarApp(): void {
                 </span>
                 <button type="button" class="fila-toma-dosis__editar" data-item-id="${item.id}" aria-label="Editar ${escaparHTML(item.nombre)}">✎</button>
               </div>
-              ${totalPildoras > 0 ? `<span class="fila-toma-dosis__total">Total: ${totalPildoras} ${totalPildoras === 1 ? "píldora" : "píldoras"}</span>` : ""}
+              ${totalPildoras > 0 ? `<span class="fila-toma-dosis__total">Total: ${totalPildoras} ${totalPildoras === 1 ? "pastilla" : "pastillas"}</span>` : ""}
             </div>
             ${dosisHTML}
-            <div class="dosis-agregar">
-              <span class="dosis-agregar__hora-select">
-                <select class="dosis-agregar__horas" data-item-id="${item.id}" aria-label="Hora">
-                  ${horas.map(h => `<option value="${h}"${h === horaDef ? " selected" : ""}>${h}</option>`).join("")}
-                </select>
-                <span class="dosis-agregar__sep">:</span>
-                <select class="dosis-agregar__minutos" data-item-id="${item.id}" aria-label="Minutos">
-                  ${minutos.map(m => `<option value="${m}"${m === minDef ? " selected" : ""}>${m}</option>`).join("")}
-                </select>
-              </span>
-              <input type="number" class="dosis-agregar__cant" value="1" min="1" data-item-id="${item.id}" aria-label="Cantidad de píldoras" />
-              <button type="button" class="dosis-agregar__btn" data-item-id="${item.id}" aria-label="Agregar dosis">+</button>
-            </div>
           </div>`;
       })
       .join("");
 
+    container.innerHTML = html;
+
+    // --- Event listeners ---
+
+    // Eliminar dosis
     container.querySelectorAll<HTMLButtonElement>(".dosis-entry__eliminar").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -560,6 +573,7 @@ export function iniciarApp(): void {
       });
     });
 
+    // Click en entry para editar inline
     container.querySelectorAll<HTMLElement>(".dosis-entry:not(.dosis-entry--editing)").forEach((entry) => {
       entry.addEventListener("click", (e) => {
         if ((e.target as HTMLElement).closest(".dosis-entry__eliminar")) return;
@@ -568,6 +582,7 @@ export function iniciarApp(): void {
       });
     });
 
+    // Guardar edición inline
     container.querySelectorAll<HTMLButtonElement>(".dosis-entry__guardar").forEach((btn) => {
       btn.addEventListener("click", () => {
         const dosisId = btn.dataset.dosisId;
@@ -583,6 +598,7 @@ export function iniciarApp(): void {
       });
     });
 
+    // Editar ítem (✎)
     container.querySelectorAll<HTMLButtonElement>(".fila-toma-dosis__editar").forEach((btn) => {
       btn.addEventListener("click", () => {
         const item = estado.items.find((i) => i.id === btn.dataset.itemId);
@@ -593,41 +609,52 @@ export function iniciarApp(): void {
       });
     });
 
-    container.querySelectorAll<HTMLButtonElement>(".dosis-agregar__btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        if (!fechaSeleccionada) return;
-        const itemId = btn.dataset.itemId!;
-        const container = btn.closest(".dosis-agregar")!;
-        const horaSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__horas")!;
-        const minSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__minutos")!;
-        const cantInput = container.querySelector<HTMLInputElement>(".dosis-agregar__cant")!;
-        const hora = `${horaSelect.value}:${minSelect.value}`;
-        const cantidad = parseInt(cantInput.value, 10) || 1;
-        if (!horaSelect.value || !minSelect.value) return;
-        agregarDosis(itemId, fechaSeleccionada, cantidad, hora);
-      });
-    });
+    // Formulario unificado: seleccionar medicamento habilita el resto
+    const itemSelect = container.querySelector<HTMLSelectElement>("[data-item-select]");
+    const formHoras = container.querySelector<HTMLSelectElement>(".dosis-agregar-unificado .dosis-agregar__horas");
+    const formMinutos = container.querySelector<HTMLSelectElement>(".dosis-agregar-unificado .dosis-agregar__minutos");
+    const formCant = container.querySelector<HTMLInputElement>(".dosis-agregar-unificado .dosis-agregar__cant");
+    const formBtn = container.querySelector<HTMLButtonElement>(".dosis-agregar-unificado .dosis-agregar__btn");
+    const unificado = container.querySelector<HTMLElement>(".dosis-agregar-unificado");
 
-    const manejarEnter = (sel: HTMLSelectElement | HTMLInputElement) => {
-      if (!fechaSeleccionada) return;
-      sel.addEventListener("keydown", (e: KeyboardEvent) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          const itemId = sel.dataset.itemId!;
-          const container = sel.closest(".dosis-agregar")!;
-          const horaSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__horas")!;
-          const minSelect = container.querySelector<HTMLSelectElement>(".dosis-agregar__minutos")!;
-          const cantInput = container.querySelector<HTMLInputElement>(".dosis-agregar__cant")!;
-          const hora = `${horaSelect.value}:${minSelect.value}`;
-          const cantidad = parseInt(cantInput.value, 10) || 1;
+    function habilitarForm(habilitado: boolean): void {
+      if (formHoras) formHoras.disabled = !habilitado;
+      if (formMinutos) formMinutos.disabled = !habilitado;
+      if (formCant) formCant.disabled = !habilitado;
+      if (formBtn) formBtn.disabled = !habilitado;
+    }
+
+    if (itemSelect && unificado) {
+      itemSelect.addEventListener("change", () => {
+        habilitarForm(itemSelect.value !== "");
+      });
+
+      // Botón +
+      const btnUnificado = unificado.querySelector<HTMLButtonElement>(".dosis-agregar__btn");
+      if (btnUnificado) {
+        btnUnificado.addEventListener("click", () => {
+          if (!fechaSeleccionada || !itemSelect.value) return;
+          const horaSelect = unificado.querySelector<HTMLSelectElement>(".dosis-agregar__horas")!;
+          const minSelect = unificado.querySelector<HTMLSelectElement>(".dosis-agregar__minutos")!;
+          const cantInput = unificado.querySelector<HTMLInputElement>(".dosis-agregar__cant")!;
           if (!horaSelect.value || !minSelect.value) return;
-          agregarDosis(itemId, fechaSeleccionada, cantidad, hora);
-        }
-      });
-    };
-    container.querySelectorAll<HTMLSelectElement>(".dosis-agregar__horas, .dosis-agregar__minutos").forEach(manejarEnter);
-    container.querySelectorAll<HTMLInputElement>(".dosis-agregar__cant").forEach(manejarEnter);
+          agregarDosis(itemSelect.value, fechaSeleccionada, parseInt(cantInput.value, 10) || 1, `${horaSelect.value}:${minSelect.value}`);
+        });
+      }
 
+      // Enter en cantidad
+      const cantInput = unificado.querySelector<HTMLInputElement>(".dosis-agregar__cant");
+      if (cantInput) {
+        cantInput.addEventListener("keydown", (e: KeyboardEvent) => {
+          if (e.key === "Enter" && itemSelect.value !== "") {
+            e.preventDefault();
+            if (btnUnificado) btnUnificado.click();
+          }
+        });
+      }
+    }
+
+    // Enter en inline editing
     const manejarEnterEditar = (el: HTMLElement) => {
       el.addEventListener("keydown", (e: KeyboardEvent) => {
         if (e.key === "Enter") {

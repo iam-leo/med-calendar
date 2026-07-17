@@ -406,6 +406,56 @@ h1, h2, h3, h4, h5, h6,
   outline-offset: 1px;
 }
 
+/* --- Formulario unificado (dosis) --- */
+.dosis-agregar-unificado {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-mist);
+}
+
+.dosis-agregar__item-select {
+  flex: 1 1 auto;
+  min-width: 10rem;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--color-mist);
+  border-radius: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-ink);
+  background-color: var(--color-surface);
+  cursor: pointer;
+  outline: none;
+}
+.dosis-agregar__item-select:focus {
+  border-color: var(--color-moss);
+}
+.dosis-agregar__item-select:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 1px;
+}
+
+.dosis-agregar__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-slate);
+  white-space: nowrap;
+}
+.dosis-agregar-unificado:has(.dosis-agregar__cant:disabled) .dosis-agregar__label {
+  opacity: 0.4;
+}
+
+.dosis-agregar__horas:disabled,
+.dosis-agregar__minutos:disabled,
+.dosis-agregar__cant:disabled,
+.dosis-agregar__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .dosis-agregar {
   display: flex;
   align-items: center;
