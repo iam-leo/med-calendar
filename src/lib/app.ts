@@ -508,16 +508,17 @@ export function iniciarApp(): void {
     </div>`;
 
     // Cada ítem con sus dosis existentes (sin formulario de agregar)
-    html += estado.items
-      .map((item) => {
+    const itemsConDosis = estado.items
+      .map(item => {
         const toma = estado.tomas.find((t) => t.itemId === item.id && t.fecha === fechaSeleccionada);
         const dosis = (toma?.dosis ?? []).slice().sort((a, b) => a.hora.localeCompare(b.hora));
-        const totalPildoras = dosis.reduce((sum, d) => sum + d.cantidad, 0);
-        const colorTexto = colorTextoLegible(item.color);
+        return { item, dosis, total: dosis.reduce((s, d) => s + d.cantidad, 0), colorTexto: colorTextoLegible(item.color) };
+      })
+      .filter(({ dosis }) => dosis.length > 0);
 
-        let dosisHTML = "";
-        if (dosis.length > 0) {
-          dosisHTML = `<div class="dosis-lista">${dosis
+    html += itemsConDosis
+      .map(({ item, dosis, total: totalPildoras, colorTexto }) => {
+        let dosisHTML = `<div class="dosis-lista">${dosis
             .map((d) => {
               if (d.id === dosisEditandoId) {
                 const [h, m] = d.hora.split(":");
@@ -543,7 +544,6 @@ export function iniciarApp(): void {
               </div>`;
             })
             .join("")}</div>`;
-        }
 
         return `<div class="fila-toma-dosis">
             <div class="fila-toma-dosis__header">
@@ -551,7 +551,7 @@ export function iniciarApp(): void {
                 <span class="tag-pill" style="background-color:${item.color};color:${colorTexto}">
                   <span aria-hidden="true">${item.emoji}</span><span>${escaparHTML(item.nombre)}</span>
                 </span>
-                <button type="button" class="fila-toma-dosis__editar" data-item-id="${item.id}" aria-label="Editar ${escaparHTML(item.nombre)}">✎</button>
+                ${dosis.length > 0 ? `<button type="button" class="fila-toma-dosis__editar" data-item-id="${item.id}" aria-label="Editar ${escaparHTML(item.nombre)}">✎</button>` : ""}
               </div>
               ${totalPildoras > 0 ? `<span class="fila-toma-dosis__total">Total: ${totalPildoras} ${totalPildoras === 1 ? "pastilla" : "pastillas"}</span>` : ""}
             </div>
