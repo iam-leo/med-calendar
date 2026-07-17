@@ -32,16 +32,65 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: -0.01em;
 }
 
-[data-theme="dark"] {
-  --color-paper: #171b1a;
-  --color-paper-alt: #1f2422;
-  --color-ink: #e2e8e6;
-  --color-moss: #3d7a6c;
-  --color-moss-dark: #4d8d7e;
-  --color-mist: #2a302e;
-  --color-clay: #d48b6a;
-  --color-slate: #8a9c98;
-  --color-surface: #1f2422;
+/* --- Temas oscuros (paletas completas) --- */
+[data-theme="midnight"] {
+  --color-paper: #0b0912;
+  --color-paper-alt: #141120;
+  --color-ink: #e4e0ee;
+  --color-moss: #a78bfa;
+  --color-moss-dark: #c4b5fd;
+  --color-mist: #221e30;
+  --color-clay: #f472b6;
+  --color-slate: #8b83a0;
+  --color-surface: #181429;
+}
+
+[data-theme="ocean"] {
+  --color-paper: #070d12;
+  --color-paper-alt: #0e171d;
+  --color-ink: #dce8ee;
+  --color-moss: #22d3ee;
+  --color-moss-dark: #67e8f9;
+  --color-mist: #1c242b;
+  --color-clay: #fb923c;
+  --color-slate: #7a8d99;
+  --color-surface: #121b22;
+}
+
+[data-theme="ruby"] {
+  --color-paper: #0c0708;
+  --color-paper-alt: #161012;
+  --color-ink: #e8e0e2;
+  --color-moss: #f43f5e;
+  --color-moss-dark: #fb7185;
+  --color-mist: #241c1e;
+  --color-clay: #fbbf24;
+  --color-slate: #8a7a7e;
+  --color-surface: #1a1416;
+}
+
+[data-theme="amber"] {
+  --color-paper: #0f0d0a;
+  --color-paper-alt: #181512;
+  --color-ink: #e8e4de;
+  --color-moss: #f59e0b;
+  --color-moss-dark: #fbbf24;
+  --color-mist: #26211c;
+  --color-clay: #fb923c;
+  --color-slate: #8a877a;
+  --color-surface: #1a1714;
+}
+
+[data-theme="plum"] {
+  --color-paper: #0f0a0e;
+  --color-paper-alt: #181214;
+  --color-ink: #e8e4e6;
+  --color-moss: #fb7185;
+  --color-moss-dark: #fda4af;
+  --color-mist: #221c1e;
+  --color-clay: #c084fc;
+  --color-slate: #8a7a82;
+  --color-surface: #1a1416;
 }
 
 /* --- Etiquetas (tags) --- */
@@ -589,12 +638,6 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 700;
   line-height: 1;
 }
-
-.theme-moon { display: inline-flex; }
-.theme-sun { display: none; }
-
-[data-theme="dark"] .theme-moon { display: none; }
-[data-theme="dark"] .theme-sun { display: inline-flex; }
 
 /* --- Empty states --- */
 .empty-state {

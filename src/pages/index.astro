@@ -1,21 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Sun from "../icons/Sun.astro";
-import Moon from "../icons/Moon.astro";
 ---
 
 <Layout titulo="Calendario de medicamentos y suplementos">
   <div class="relative mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
-    <!-- Theme toggle -->
-    <button
-      id="btn-toggle-tema"
-      type="button"
-      aria-label="Cambiar tema"
-      class="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-lg text-slate transition hover:bg-paper-alt sm:right-6 sm:top-10"
-    >
-      <Sun class="theme-sun" size={20} />
-      <Moon class="theme-moon" size={20} />
-    </button>
+    <!-- Theme selector -->
+    <div class="absolute right-4 top-4 z-10 sm:right-6 sm:top-10">
+      <button
+        id="btn-temas"
+        type="button"
+        aria-label="Seleccionar tema"
+        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate transition hover:bg-paper-alt"
+      >
+        <span aria-hidden="true" class="text-base">🎨</span>
+      </button>
+      <div id="popover-temas" class="hidden absolute right-0 top-10 z-20 w-46 rounded-xl border border-mist bg-surface p-1.5 shadow-lg"></div>
+    </div>
 
     <!-- Encabezado -->
     <header class="flex flex-col gap-4">

@@ -29,7 +29,6 @@ export function iniciarApp(): void {
   const btnMesAnterior = $<HTMLButtonElement>("#btn-mes-anterior");
   const btnMesSiguiente = $<HTMLButtonElement>("#btn-mes-siguiente");
   const btnHoy = $<HTMLButtonElement>("#btn-hoy");
-  const btnToggleTema = $<HTMLButtonElement>("#btn-toggle-tema");
   const btnAgregarItem = $<HTMLButtonElement>("#btn-agregar-item");
 
   const modalItem = $<HTMLElement>("#modal-item");
@@ -68,6 +67,10 @@ export function iniciarApp(): void {
   const btnDiaAnterior = $<HTMLButtonElement>("#btn-dia-anterior");
   const btnDiaSiguiente = $<HTMLButtonElement>("#btn-dia-siguiente");
   const btnAgregarDesdeVacioMobile = $<HTMLButtonElement>("#btn-agregar-desde-vacio-mobile");
+
+  // --- Referencias DOM (selector de temas) ---
+  const btnTemas = $<HTMLButtonElement>("#btn-temas");
+  const popoverTemas = $<HTMLElement>("#popover-temas");
 
   // --- Días de la semana (encabezados) ---
   const encabezadoDias = $<HTMLElement>("#encabezado-dias");
@@ -784,30 +787,70 @@ export function iniciarApp(): void {
     render();
   });
 
-  // --- Tema (dark/light) ---
+  // --- Selector de temas ---
+  const TEMAS = [
+    { id: "light", label: "Claro", dot: "#2f5d53" },
+    { id: "midnight", label: "Medianoche", dot: "#a78bfa" },
+    { id: "ocean", label: "Océano", dot: "#22d3ee" },
+    { id: "ruby", label: "Rubí", dot: "#f43f5e" },
+    { id: "amber", label: "Ámbar", dot: "#f59e0b" },
+    { id: "plum", label: "Ciruela", dot: "#fb7185" },
+  ];
+
+  let temaActivo = cargarTema() || "light";
+
   function aplicarTema(tema: string): void {
-    if (tema === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-      btnToggleTema.setAttribute("aria-pressed", "true");
-    } else {
+    temaActivo = tema;
+    if (tema === "light") {
       document.documentElement.removeAttribute("data-theme");
-      btnToggleTema.setAttribute("aria-pressed", "false");
+    } else {
+      document.documentElement.setAttribute("data-theme", tema);
     }
+    guardarTema(tema);
+    renderPopoverTemas();
   }
 
-  btnToggleTema.addEventListener("click", () => {
-    const actual = document.documentElement.getAttribute("data-theme");
-    const nuevo = actual === "dark" ? "light" : "dark";
-    aplicarTema(nuevo);
-    guardarTema(nuevo);
+  function renderPopoverTemas(): void {
+    popoverTemas.innerHTML = TEMAS.map(
+      (t) => `<button type="button" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ink transition hover:bg-paper-alt" data-tema="${t.id}">
+        <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style="background-color:${t.dot}${temaActivo === t.id ? ";box-shadow:0 0 0 2px var(--color-ink)" : ""}">${temaActivo === t.id ? '<span class="text-xs font-black text-white">✓</span>' : ""}</span>
+        <span>${t.label}</span>
+        ${t.id !== "light" ? '<span class="ml-auto text-[0.6rem] text-slate">◆</span>' : ""}
+      </button>`
+    ).join("");
+
+    popoverTemas.querySelectorAll<HTMLButtonElement>("[data-tema]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        aplicarTema(btn.dataset.tema!);
+        cerrarPopoverTemas();
+      });
+    });
+  }
+
+  function abrirPopoverTemas(): void {
+    popoverTemas.classList.remove("hidden");
+  }
+
+  function cerrarPopoverTemas(): void {
+    popoverTemas.classList.add("hidden");
+  }
+
+  btnTemas.addEventListener("click", (e) => {
+    e.stopPropagation();
+    popoverTemas.classList.contains("hidden") ? abrirPopoverTemas() : cerrarPopoverTemas();
   });
 
-  const temaGuardado = cargarTema();
-  if (temaGuardado === "dark") {
-    aplicarTema("dark");
-  } else if (temaGuardado === "light") {
-    aplicarTema("light");
-  }
+  document.addEventListener("click", (e) => {
+    if (!popoverTemas.classList.contains("hidden") && !btnTemas.contains(e.target as Node) && !popoverTemas.contains(e.target as Node)) {
+      cerrarPopoverTemas();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") cerrarPopoverTemas();
+  });
+
+  aplicarTema(temaActivo);
 
   render();
 }

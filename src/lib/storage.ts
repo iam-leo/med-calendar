@@ -45,7 +45,14 @@ export function guardarTomas(tomas: Toma[]): void {
 
 export function cargarTema(): string {
   if (typeof localStorage === "undefined") return "system";
-  return localStorage.getItem(CLAVE_TEMA) || "system";
+  const tema = localStorage.getItem(CLAVE_TEMA);
+  if (!tema) return "system";
+  // Migrate old "dark" to "midnight"
+  if (tema === "dark") {
+    guardarTema("midnight");
+    return "midnight";
+  }
+  return tema;
 }
 
 export function guardarTema(tema: string): void {
