@@ -48,14 +48,22 @@ h1, h2, h3, h4, h5, h6,
 .tag-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
   border-radius: 9999px;
-  padding: 0.125rem 0.5rem;
-  font-size: 0.6875rem;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.625rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.2;
   white-space: nowrap;
   max-width: 100%;
+}
+@media (min-width: 640px) {
+  .tag-pill {
+    gap: 0.25rem;
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.5rem;
+    line-height: 1.3;
+  }
 }
 .tag-pill span.truncate {
   overflow: hidden;
@@ -82,15 +90,22 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
-  min-height: 6.5rem;
-  padding: 0.5rem;
+  gap: 0.15rem;
+  min-height: 4.5rem;
+  padding: 0.3rem;
   background-color: var(--color-surface);
   border: 1px solid var(--color-mist);
-  border-radius: 0.7rem;
+  border-radius: 0.6rem;
   text-align: left;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
   overflow: hidden;
+}
+@media (min-width: 640px) {
+  .celda-dia {
+    gap: 0.25rem;
+    min-height: 6.5rem;
+    padding: 0.5rem;
+    border-radius: 0.7rem;
+  }
 }
 .celda-dia:hover {
   border-color: var(--color-moss);
@@ -102,21 +117,35 @@ h1, h2, h3, h4, h5, h6,
 }
 .celda-dia__numero {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-slate);
+}
+@media (min-width: 640px) {
+  .celda-dia__numero {
+    font-size: 0.8125rem;
+  }
 }
 .celda-dia--hoy .celda-dia__numero {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.35rem;
-  height: 1.35rem;
-  padding: 0 0.3rem;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  padding: 0 0.25rem;
   background-color: var(--color-moss);
   color: var(--color-paper);
   border-radius: 9999px;
   font-weight: 700;
+  font-size: 0.6875rem;
+}
+@media (min-width: 640px) {
+  .celda-dia--hoy .celda-dia__numero {
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0 0.3rem;
+    font-size: 0.8125rem;
+  }
 }
 .celda-dia--atenuada {
   background-color: var(--color-paper-alt);
@@ -125,8 +154,13 @@ h1, h2, h3, h4, h5, h6,
 .celda-dia__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.2rem;
+  gap: 0.15rem;
   width: 100%;
+}
+@media (min-width: 640px) {
+  .celda-dia__tags {
+    gap: 0.2rem;
+  }
 }
 
 /* --- Selectores del modal de ítem --- */
@@ -206,8 +240,13 @@ h1, h2, h3, h4, h5, h6,
 
 /* --- Nueva UI de dosis (Phase 1) --- */
 .fila-toma-dosis {
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid var(--color-mist);
+}
+@media (min-width: 640px) {
+  .fila-toma-dosis {
+    padding: 0.75rem 0;
+  }
 }
 .fila-toma-dosis:last-child {
   border-bottom: none;
@@ -270,13 +309,20 @@ h1, h2, h3, h4, h5, h6,
 .dosis-entry {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
+  gap: 0.35rem;
+  padding: 0.2rem 0.35rem;
   border-radius: 0.4rem;
   background-color: var(--color-paper-alt);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: background-color 0.12s;
+}
+@media (min-width: 640px) {
+  .dosis-entry {
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8125rem;
+  }
 }
 .dosis-entry:hover {
   background-color: var(--color-mist);
@@ -363,7 +409,14 @@ h1, h2, h3, h4, h5, h6,
 .dosis-agregar {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+@media (min-width: 640px) {
+  .dosis-agregar {
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+  }
 }
 
 .dosis-agregar__hora-select {
@@ -374,15 +427,25 @@ h1, h2, h3, h4, h5, h6,
 
 .dosis-agregar__horas,
 .dosis-agregar__minutos {
-  padding: 0.35rem 0.2rem;
+  padding: 0.25rem 0.15rem;
   border: 1px solid var(--color-mist);
-  border-radius: 0.4rem;
+  border-radius: 0.35rem;
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--color-ink);
   background-color: var(--color-surface);
   outline: none;
   cursor: pointer;
+  max-width: 2.8rem;
+}
+@media (min-width: 640px) {
+  .dosis-agregar__horas,
+  .dosis-agregar__minutos {
+    padding: 0.35rem 0.2rem;
+    border-radius: 0.4rem;
+    font-size: 0.8125rem;
+    max-width: none;
+  }
 }
 .dosis-agregar__horas:focus,
 .dosis-agregar__minutos:focus {
@@ -396,20 +459,33 @@ h1, h2, h3, h4, h5, h6,
 
 .dosis-agregar__sep {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--color-slate);
   line-height: 1;
 }
+@media (min-width: 640px) {
+  .dosis-agregar__sep {
+    font-size: 0.8125rem;
+  }
+}
 
 .dosis-agregar__cant {
-  width: 3.5rem;
-  padding: 0.35rem 0.5rem;
+  width: 3rem;
+  padding: 0.25rem 0.35rem;
   border: 1px solid var(--color-mist);
-  border-radius: 0.4rem;
-  font-size: 0.8125rem;
+  border-radius: 0.35rem;
+  font-size: 0.75rem;
   color: var(--color-ink);
   background-color: var(--color-surface);
   outline: none;
+}
+@media (min-width: 640px) {
+  .dosis-agregar__cant {
+    width: 3.5rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.4rem;
+    font-size: 0.8125rem;
+  }
 }
 .dosis-agregar__cant:focus {
   border-color: var(--color-moss);
@@ -423,16 +499,24 @@ h1, h2, h3, h4, h5, h6,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.4rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.35rem;
   border: none;
   background-color: var(--color-moss);
   color: var(--color-paper);
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.12s;
+  transition: background-color 0.12s, transform 0.12s;
+}
+@media (min-width: 640px) {
+  .dosis-agregar__btn {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.4rem;
+    font-size: 1rem;
+  }
 }
 .dosis-agregar__btn:hover {
   background-color: var(--color-moss-dark);
@@ -513,11 +597,18 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.85rem 0.5rem;
-  border-radius: 0.75rem;
+  gap: 0.25rem;
+  padding: 0.65rem 0.35rem;
+  border-radius: 0.65rem;
   background-color: var(--color-paper-alt);
   text-align: center;
+}
+@media (min-width: 640px) {
+  .stat-card {
+    gap: 0.35rem;
+    padding: 0.85rem 0.5rem;
+    border-radius: 0.75rem;
+  }
 }
 .stat-card__icon {
   font-size: 1.2rem;

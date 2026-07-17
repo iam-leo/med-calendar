@@ -58,7 +58,7 @@ export function iniciarApp(): void {
   // --- Días de la semana (encabezado) ---
   const encabezadoDias = $<HTMLElement>("#encabezado-dias");
   encabezadoDias.innerHTML = NOMBRES_DIA_CORTO.map(
-    (d) => `<div class="text-center text-xs font-medium uppercase tracking-wider text-slate py-2">${d}</div>`
+    (d) => `<div class="text-center text-xs font-medium uppercase tracking-wider text-slate py-1.5 sm:py-2">${d}</div>`
   ).join("");
 
   // --- Render principal ---
