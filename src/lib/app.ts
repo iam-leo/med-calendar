@@ -56,16 +56,33 @@ export function iniciarApp(): void {
   const seccionEstadisticas = $<HTMLElement>("#seccion-estadisticas");
   const grillaEstadisticas = $<HTMLElement>("#grilla-estadisticas");
 
-  // --- Días de la semana (encabezado) ---
+  // --- Referencias DOM (vista móvil) ---
+  const vistaMobile = $<HTMLElement>("#vista-mobile");
+  const encabezadoDiasMobile = $<HTMLElement>("#encabezado-dias-mobile");
+  const miniCalendario = $<HTMLElement>("#mini-calendario");
+  const detalleDiaMobile = $<HTMLElement>("#detalle-dia-mobile");
+  const listaTomasMobile = $<HTMLElement>("#lista-tomas-mobile");
+  const estadoVacioDiaMobile = $<HTMLElement>("#estado-vacio-dia-mobile");
+  const diaMobileTitulo = $<HTMLElement>("#dia-mobile-titulo");
+  const estadoSeleccionaDia = $<HTMLElement>("#estado-selecciona-dia");
+  const btnDiaAnterior = $<HTMLButtonElement>("#btn-dia-anterior");
+  const btnDiaSiguiente = $<HTMLButtonElement>("#btn-dia-siguiente");
+  const btnAgregarDesdeVacioMobile = $<HTMLButtonElement>("#btn-agregar-desde-vacio-mobile");
+
+  // --- Días de la semana (encabezados) ---
   const encabezadoDias = $<HTMLElement>("#encabezado-dias");
   encabezadoDias.innerHTML = NOMBRES_DIA_CORTO.map(
     (d) => `<div class="text-center text-xs font-medium uppercase tracking-wider text-slate py-1.5 sm:py-2">${d}</div>`
+  ).join("");
+  encabezadoDiasMobile.innerHTML = NOMBRES_DIA_CORTO.map(
+    (d) => `<div class="text-center text-[0.6rem] font-medium uppercase tracking-wider text-slate py-1">${d}</div>`
   ).join("");
 
   // --- Render principal ---
   function render(): void {
     mesTitulo.textContent = `${NOMBRES_MES[mesVisible]} ${anioVisible}`;
     renderGrillaCalendario();
+    renderMiniCalendario();
     renderListaItems();
     renderEstadisticas();
   }
@@ -110,6 +127,86 @@ export function iniciarApp(): void {
     grillaCalendario.querySelectorAll<HTMLButtonElement>("[data-fecha]").forEach((btn) => {
       btn.addEventListener("click", () => abrirModalDia(btn.dataset.fecha!));
     });
+  }
+
+  function renderMiniCalendario(): void {
+    const celdas = generarGrillaMes(anioVisible, mesVisible);
+    miniCalendario.innerHTML = celdas
+      .map((celda) => {
+        const tieneActividad = estado.tomas.some((t) => t.fecha === celda.clave && t.dosis.length > 0);
+        const seleccionado = celda.clave === fechaSeleccionada;
+        const clases = [
+          "mini-celda",
+          celda.delMesActual ? "" : "mini-celda--atenuada",
+          celda.esHoy ? "mini-celda--hoy" : "",
+          seleccionado ? "mini-celda--selected" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+        return `<button type="button" class="${clases}" data-fecha="${celda.clave}" aria-label="Día ${celda.numero}">
+            <span class="mini-celda__numero">${celda.numero}</span>
+            ${tieneActividad ? '<span class="mini-celda__punto"></span>' : ""}
+          </button>`;
+      })
+      .join("");
+
+    miniCalendario.querySelectorAll<HTMLButtonElement>("[data-fecha]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const clave = btn.dataset.fecha!;
+        if (fechaSeleccionada === clave) return;
+        seleccionarDiaMobile(clave);
+      });
+    });
+  }
+
+  function seleccionarDiaMobile(clave: string): void {
+    fechaSeleccionada = clave;
+    estadoSeleccionaDia.classList.add("hidden");
+    detalleDiaMobile.classList.remove("hidden");
+    actualizarDetalleDiaMobile();
+    renderMiniCalendario();
+  }
+
+  function cerrarDetalleMobile(): void {
+    fechaSeleccionada = null;
+    detalleDiaMobile.classList.add("hidden");
+    estadoSeleccionaDia.classList.remove("hidden");
+    renderMiniCalendario();
+  }
+
+  function actualizarDetalleDiaMobile(): void {
+    if (!fechaSeleccionada) return;
+    const [anio, mes, dia] = fechaSeleccionada.split("-").map(Number);
+    const fecha = new Date(anio, mes - 1, dia);
+    diaMobileTitulo.textContent = fecha.toLocaleDateString("es-ES", {
+      weekday: "long", day: "numeric", month: "long",
+    });
+
+    const hayItems = estado.items.length > 0;
+    estadoVacioDiaMobile.classList.toggle("hidden", hayItems);
+    if (hayItems) {
+      renderListaTomasDia(listaTomasMobile);
+    } else {
+      listaTomasMobile.innerHTML = "";
+    }
+  }
+
+  function navegarDiaMobile(direccion: -1 | 1): void {
+    if (!fechaSeleccionada) return;
+    const [anio, mes, dia] = fechaSeleccionada.split("-").map(Number);
+    const fecha = new Date(anio, mes - 1, dia + direccion);
+    const clave = aClaveFecha(fecha);
+    anioVisible = fecha.getFullYear();
+    mesVisible = fecha.getMonth();
+    seleccionarDiaMobile(clave);
+    render();
+  }
+
+  function actualizarTomasDia(): void {
+    if (fechaSeleccionada) {
+      renderListaTomasDia(listaTomasDia);
+      actualizarDetalleDiaMobile();
+    }
   }
 
   function renderListaItems(): void {
@@ -289,8 +386,13 @@ export function iniciarApp(): void {
     formItem.reset();
     itemEditandoId = null;
     if (itemModalDesdeDia) {
-      abrirModalDia(itemModalDesdeDia);
+      const clave = itemModalDesdeDia;
       itemModalDesdeDia = null;
+      if (window.innerWidth < 640) {
+        seleccionarDiaMobile(clave);
+      } else {
+        abrirModalDia(clave);
+      }
     }
   }
 
@@ -319,7 +421,7 @@ export function iniciarApp(): void {
     guardarItems(estado.items);
     cerrarModalItem();
     render();
-    if (fechaSeleccionada) renderListaTomasDia();
+    actualizarTomasDia();
   });
 
   btnEliminarItem.addEventListener("click", () => {
@@ -330,7 +432,7 @@ export function iniciarApp(): void {
     guardarTomas(estado.tomas);
     cerrarModalItem();
     render();
-    if (fechaSeleccionada) renderListaTomasDia();
+    actualizarTomasDia();
   });
 
   inputNombre.addEventListener("input", actualizarVistaPrevia);
@@ -362,7 +464,7 @@ export function iniciarApp(): void {
       month: "long",
       year: "numeric",
     });
-    renderListaTomasDia();
+    renderListaTomasDia(listaTomasDia);
     modalDia.classList.add("modal-overlay--open");
   }
 
@@ -372,10 +474,12 @@ export function iniciarApp(): void {
     dosisEditandoId = null;
   }
 
-  function renderListaTomasDia(): void {
-    estadoVacioDia.classList.toggle("hidden", estado.items.length > 0);
+  function renderListaTomasDia(container: HTMLElement = listaTomasDia): void {
+    if (container === listaTomasDia) {
+      estadoVacioDia.classList.toggle("hidden", estado.items.length > 0);
+    }
     if (estado.items.length === 0) {
-      listaTomasDia.innerHTML = "";
+      container.innerHTML = "";
       return;
     }
 
@@ -383,7 +487,7 @@ export function iniciarApp(): void {
     const horas = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
     const minutos = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"));
 
-    listaTomasDia.innerHTML = estado.items
+    container.innerHTML = estado.items
       .map((item) => {
         const toma = estado.tomas.find((t) => t.itemId === item.id && t.fecha === fechaSeleccionada);
         const dosis = (toma?.dosis ?? []).slice().sort((a, b) => a.hora.localeCompare(b.hora));
@@ -448,7 +552,7 @@ export function iniciarApp(): void {
       })
       .join("");
 
-    listaTomasDia.querySelectorAll<HTMLButtonElement>(".dosis-entry__eliminar").forEach((btn) => {
+    container.querySelectorAll<HTMLButtonElement>(".dosis-entry__eliminar").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         if (!fechaSeleccionada) return;
@@ -456,7 +560,7 @@ export function iniciarApp(): void {
       });
     });
 
-    listaTomasDia.querySelectorAll<HTMLElement>(".dosis-entry:not(.dosis-entry--editing)").forEach((entry) => {
+    container.querySelectorAll<HTMLElement>(".dosis-entry:not(.dosis-entry--editing)").forEach((entry) => {
       entry.addEventListener("click", (e) => {
         if ((e.target as HTMLElement).closest(".dosis-entry__eliminar")) return;
         const dosisId = entry.dataset.dosisId;
@@ -464,7 +568,7 @@ export function iniciarApp(): void {
       });
     });
 
-    listaTomasDia.querySelectorAll<HTMLButtonElement>(".dosis-entry__guardar").forEach((btn) => {
+    container.querySelectorAll<HTMLButtonElement>(".dosis-entry__guardar").forEach((btn) => {
       btn.addEventListener("click", () => {
         const dosisId = btn.dataset.dosisId;
         const itemId = btn.dataset.itemId;
@@ -479,7 +583,7 @@ export function iniciarApp(): void {
       });
     });
 
-    listaTomasDia.querySelectorAll<HTMLButtonElement>(".fila-toma-dosis__editar").forEach((btn) => {
+    container.querySelectorAll<HTMLButtonElement>(".fila-toma-dosis__editar").forEach((btn) => {
       btn.addEventListener("click", () => {
         const item = estado.items.find((i) => i.id === btn.dataset.itemId);
         if (!item) return;
@@ -489,7 +593,7 @@ export function iniciarApp(): void {
       });
     });
 
-    listaTomasDia.querySelectorAll<HTMLButtonElement>(".dosis-agregar__btn").forEach((btn) => {
+    container.querySelectorAll<HTMLButtonElement>(".dosis-agregar__btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         if (!fechaSeleccionada) return;
         const itemId = btn.dataset.itemId!;
@@ -521,8 +625,8 @@ export function iniciarApp(): void {
         }
       });
     };
-    listaTomasDia.querySelectorAll<HTMLSelectElement>(".dosis-agregar__horas, .dosis-agregar__minutos").forEach(manejarEnter);
-    listaTomasDia.querySelectorAll<HTMLInputElement>(".dosis-agregar__cant").forEach(manejarEnter);
+    container.querySelectorAll<HTMLSelectElement>(".dosis-agregar__horas, .dosis-agregar__minutos").forEach(manejarEnter);
+    container.querySelectorAll<HTMLInputElement>(".dosis-agregar__cant").forEach(manejarEnter);
 
     const manejarEnterEditar = (el: HTMLElement) => {
       el.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -535,7 +639,7 @@ export function iniciarApp(): void {
         }
       });
     };
-    listaTomasDia.querySelectorAll<HTMLElement>(".dosis-entry--editing .dosis-agregar__horas, .dosis-entry--editing .dosis-agregar__minutos, .dosis-entry--editing .dosis-agregar__cant").forEach(manejarEnterEditar);
+    container.querySelectorAll<HTMLElement>(".dosis-entry--editing .dosis-agregar__horas, .dosis-entry--editing .dosis-agregar__minutos, .dosis-entry--editing .dosis-agregar__cant").forEach(manejarEnterEditar);
   }
 
   function agregarDosis(itemId: string, fecha: string, cantidad: number, hora: string): void {
@@ -547,8 +651,9 @@ export function iniciarApp(): void {
     toma.dosis.push({ id: generarId(), cantidad, hora });
     guardarTomas(estado.tomas);
     renderGrillaCalendario();
-    renderListaTomasDia();
+    renderMiniCalendario();
     renderEstadisticas();
+    actualizarTomasDia();
   }
 
   function eliminarDosis(itemId: string, fecha: string, dosisId: string): void {
@@ -560,13 +665,14 @@ export function iniciarApp(): void {
     }
     guardarTomas(estado.tomas);
     renderGrillaCalendario();
-    renderListaTomasDia();
+    renderMiniCalendario();
     renderEstadisticas();
+    actualizarTomasDia();
   }
 
   function entrarEditarDosis(dosisId: string): void {
     dosisEditandoId = dosisId;
-    renderListaTomasDia();
+    actualizarTomasDia();
   }
 
   function guardarDosisEditada(itemId: string, fecha: string, dosisId: string, cantidad: number, hora: string): void {
@@ -579,8 +685,9 @@ export function iniciarApp(): void {
     guardarTomas(estado.tomas);
     dosisEditandoId = null;
     renderGrillaCalendario();
-    renderListaTomasDia();
+    renderMiniCalendario();
     renderEstadisticas();
+    actualizarTomasDia();
   }
 
   btnCerrarModalDia.addEventListener("click", cerrarModalDia);
@@ -594,6 +701,15 @@ export function iniciarApp(): void {
     abrirModalItem();
   });
 
+  btnAgregarDesdeVacioMobile.addEventListener("click", () => {
+    itemModalDesdeDia = fechaSeleccionada;
+    cerrarDetalleMobile();
+    abrirModalItem();
+  });
+
+  btnDiaAnterior.addEventListener("click", () => navegarDiaMobile(-1));
+  btnDiaSiguiente.addEventListener("click", () => navegarDiaMobile(1));
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (itemModalDesdeDia) {
@@ -602,6 +718,17 @@ export function iniciarApp(): void {
         cerrarModalDia();
         cerrarModalItem();
       }
+    }
+  });
+
+  // Reset views when switching between mobile and desktop
+  const mql = window.matchMedia("(min-width: 640px)");
+  mql.addEventListener("change", (ev) => {
+    if (ev.matches) {
+      cerrarDetalleMobile();
+    } else {
+      cerrarModalDia();
+      dosisEditandoId = null;
     }
   });
 
