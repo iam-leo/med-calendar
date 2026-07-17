@@ -507,7 +507,7 @@ export function iniciarApp(): void {
       </span>
       <span class="dosis-agregar__label">Cantidad</span>
       <input type="number" class="dosis-agregar__cant" value="1" min="1" disabled />
-      <button type="button" class="dosis-agregar__btn" disabled>+</button>
+      <button type="button" class="dosis-agregar__btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
     </div>`;
 
     // Cada ítem con sus dosis existentes (sin formulario de agregar)
@@ -536,14 +536,14 @@ export function iniciarApp(): void {
                     </select>
                   </span>
                   <input type="number" class="dosis-agregar__cant" value="${d.cantidad}" min="1" aria-label="Cantidad de pastillas" />
-                  <button type="button" class="dosis-entry__guardar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Guardar dosis">✓</button>
-                  <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis">✕</button>
+                  <button type="button" class="dosis-entry__guardar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Guardar dosis"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+                  <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                 </div>`;
               }
               return `<div class="dosis-entry" data-item-id="${item.id}" data-dosis-id="${d.id}">
                 <span class="dosis-entry__hora">${escaparHTML(d.hora)}</span>
                 <span class="dosis-entry__cant">${d.cantidad} ${d.cantidad === 1 ? "pastilla" : "pastillas"}</span>
-                <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis de las ${d.hora}">✕</button>
+                <button type="button" class="dosis-entry__eliminar" data-item-id="${item.id}" data-dosis-id="${d.id}" aria-label="Eliminar dosis de las ${d.hora}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
               </div>`;
             })
             .join("")}</div>`;
@@ -554,7 +554,7 @@ export function iniciarApp(): void {
                 <span class="tag-pill" style="background-color:${item.color};color:${colorTexto}">
                   <span aria-hidden="true">${item.emoji}</span><span>${escaparHTML(item.nombre)}</span>
                 </span>
-                ${dosis.length > 0 ? `<button type="button" class="fila-toma-dosis__editar" data-item-id="${item.id}" aria-label="Editar ${escaparHTML(item.nombre)}">✎</button>` : ""}
+                ${dosis.length > 0 ? `<button type="button" class="fila-toma-dosis__editar" data-item-id="${item.id}" aria-label="Editar ${escaparHTML(item.nombre)}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>` : ""}
               </div>
               ${totalPildoras > 0 ? `<span class="fila-toma-dosis__total">Total: ${totalPildoras} ${totalPildoras === 1 ? "pastilla" : "pastillas"}</span>` : ""}
             </div>
@@ -813,7 +813,7 @@ export function iniciarApp(): void {
   function renderPopoverTemas(): void {
     popoverTemas.innerHTML = TEMAS.map(
       (t) => `<button type="button" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ink transition hover:bg-paper-alt" data-tema="${t.id}">
-        <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style="background-color:${t.dot}${temaActivo === t.id ? ";box-shadow:0 0 0 2px var(--color-ink)" : ""}">${temaActivo === t.id ? '<span class="text-xs font-black text-white">✓</span>' : ""}</span>
+        <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style="background-color:${t.dot}${temaActivo === t.id ? ";box-shadow:0 0 0 2px var(--color-ink)" : ""}">${temaActivo === t.id ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M20 6 9 17l-5-5"/></svg>' : ""}</span>
         <span>${t.label}</span>
         ${t.id !== "light" ? '<span class="ml-auto text-[0.6rem] text-slate">◆</span>' : ""}
       </button>`

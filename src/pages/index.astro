@@ -1,5 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Palette from "../icons/Palette.astro";
+import Pill from "../icons/Pill.astro";
+import ChevronLeft from "../icons/ChevronLeft.astro";
+import ChevronRight from "../icons/ChevronRight.astro";
+import X from "../icons/X.astro";
+import Plus from "../icons/Plus.astro";
+import Trash2 from "../icons/Trash2.astro";
+import Check from "../icons/Check.astro";
+import Cross from "../icons/Cross.astro";
 ---
 
 <Layout titulo="Calendario de medicamentos y suplementos">
@@ -12,7 +21,7 @@ import Layout from "../layouts/Layout.astro";
         aria-label="Seleccionar tema"
         class="flex h-9 w-9 items-center justify-center rounded-lg text-slate transition hover:bg-paper-alt"
       >
-        <span aria-hidden="true" class="text-base">🎨</span>
+        <Palette size={18} />
       </button>
       <div id="popover-temas" class="hidden absolute right-0 top-10 z-20 w-46 rounded-xl border border-mist bg-surface p-1.5 shadow-lg"></div>
     </div>
@@ -20,8 +29,8 @@ import Layout from "../layouts/Layout.astro";
     <!-- Encabezado -->
     <header class="flex flex-col gap-4">
       <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-moss text-lg text-paper">
-          💊
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-moss text-paper">
+          <Pill size={22} />
         </div>
         <div>
           <h1 class="font-display text-xl font-semibold leading-tight text-ink sm:text-2xl">
@@ -39,7 +48,7 @@ import Layout from "../layouts/Layout.astro";
             aria-label="Mes anterior"
             class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist sm:h-10 sm:w-10"
           >
-            <span aria-hidden="true" class="text-base sm:text-lg">‹</span>
+            <ChevronLeft size={20} />
           </button>
           <h2 id="mes-titulo" class="min-w-[8rem] text-center font-display text-sm font-semibold sm:min-w-[10rem] sm:text-lg">
             &nbsp;
@@ -50,7 +59,7 @@ import Layout from "../layouts/Layout.astro";
             aria-label="Mes siguiente"
             class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist sm:h-10 sm:w-10"
           >
-            <span aria-hidden="true" class="text-base sm:text-lg">›</span>
+            <ChevronRight size={20} />
           </button>
           <button
             id="btn-hoy"
@@ -65,16 +74,16 @@ import Layout from "../layouts/Layout.astro";
           <button
             id="btn-agregar-item"
             type="button"
-            class="rounded-lg bg-moss px-3 py-1.5 text-xs font-semibold text-paper transition hover:bg-moss-dark sm:px-4 sm:py-2 sm:text-sm"
+            class="flex items-center gap-1.5 rounded-lg bg-moss px-3 py-1.5 text-xs font-semibold text-paper transition hover:bg-moss-dark sm:px-4 sm:py-2 sm:text-sm"
           >
-            + Agregar ítem
+            <Plus size={16} /> Agregar ítem
           </button>
         </div>
       </div>
 
       <!-- Lista de ítems registrados -->
       <div>
-        <p class="mb-3 text-xs font-medium uppercase tracking-wider text-slate">Tu botiquín</p>
+        <p class="mb-3 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-slate"><Cross size={12} /> Tu botiquín</p>
         <div id="estado-vacio-items" class="empty-state">
           <div class="empty-state__grid">
             <span>💊</span><span>💉</span><span>🌿</span>
@@ -115,12 +124,12 @@ import Layout from "../layouts/Layout.astro";
           <button
             id="btn-dia-anterior" type="button" aria-label="Día anterior"
             class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist"
-          >‹</button>
+          ><ChevronLeft size={16} /></button>
           <h3 id="dia-mobile-titulo" class="font-display text-sm font-semibold capitalize text-ink">&nbsp;</h3>
           <button
             id="btn-dia-siguiente" type="button" aria-label="Día siguiente"
             class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist"
-          >›</button>
+          ><ChevronRight size={16} /></button>
         </div>
         <div id="lista-tomas-mobile" class="flex flex-col"></div>
         <div id="estado-vacio-dia-mobile" class="hidden flex-col items-center gap-2 py-4 text-center">
@@ -130,7 +139,7 @@ import Layout from "../layouts/Layout.astro";
           <button
             id="btn-agregar-desde-vacio-mobile" type="button"
             class="rounded-lg bg-moss px-3.5 py-1.5 text-xs font-semibold text-paper transition hover:bg-moss-dark"
-          >+ Agregar medicamento</button>
+          ><Plus size={14} /> Agregar medicamento</button>
         </div>
       </div>
     </div>
@@ -157,7 +166,7 @@ import Layout from "../layouts/Layout.astro";
           aria-label="Cerrar"
           class="flex h-8 w-8 items-center justify-center rounded-lg text-slate hover:bg-paper-alt"
         >
-          <span aria-hidden="true">✕</span>
+          <X size={16} />
         </button>
       </div>
 
@@ -206,9 +215,9 @@ import Layout from "../layouts/Layout.astro";
           <button
             id="btn-eliminar-item"
             type="button"
-            class="hidden rounded-lg border border-clay px-3 py-2 text-sm font-medium text-clay hover:bg-clay/10"
+            class="hidden flex items-center gap-1.5 rounded-lg border border-clay px-3 py-2 text-sm font-medium text-clay hover:bg-clay/10"
           >
-            Eliminar
+            <Trash2 size={16} /> Eliminar
           </button>
           <div class="ml-auto flex gap-2">
             <button
@@ -218,8 +227,8 @@ import Layout from "../layouts/Layout.astro";
             >
               Cancelar
             </button>
-            <button type="submit" class="rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper hover:bg-moss-dark">
-              Guardar
+            <button type="submit" class="flex items-center gap-1.5 rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper hover:bg-moss-dark">
+              <Check size={16} /> Guardar
             </button>
           </div>
         </div>
@@ -238,7 +247,7 @@ import Layout from "../layouts/Layout.astro";
           aria-label="Cerrar"
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate hover:bg-paper-alt"
         >
-          <span aria-hidden="true">✕</span>
+          <X size={16} />
         </button>
       </div>
 
@@ -252,7 +261,7 @@ import Layout from "../layouts/Layout.astro";
             type="button"
             class="mt-1 self-start rounded-lg bg-moss px-3.5 py-1.5 text-xs font-semibold text-paper transition hover:bg-moss-dark"
           >
-            + Agregar medicamento
+            <Plus size={14} /> Agregar medicamento
           </button>
         </div>
       </div>
