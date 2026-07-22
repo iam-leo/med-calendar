@@ -15,15 +15,28 @@ export interface Item {
   creadoEn: string;
 }
 
-/** Registro de que un ítem fue tomado en una fecha concreta (YYYY-MM-DD). */
+/** Una dosis individual dentro de una toma. */
+export interface Dosis {
+  id: string;
+  /** Número de pastillas/unidades tomadas */
+  cantidad: number;
+  /** Hora en formato "HH:mm" (24h) */
+  hora: string;
+}
+
+/** Registro de todas las dosis de un ítem en una fecha concreta (YYYY-MM-DD). */
 export interface Toma {
   itemId: string;
   fecha: string;
+  /** Lista de dosis registradas para este ítem en esta fecha */
+  dosis: Dosis[];
 }
 
 export interface EstadoApp {
   items: Item[];
   tomas: Toma[];
+  /** Anotaciones generales por fecha (clave: YYYY-MM-DD, valor: texto, máx 140 chars) */
+  notas?: Record<string, string>;
 }
 
 /** Preset rápido al crear un ítem nuevo. */

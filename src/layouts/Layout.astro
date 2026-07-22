@@ -19,9 +19,25 @@ const { titulo = "Calendario de medicamentos" } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,0..100&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"
       rel="stylesheet"
     />
+    <script is:inline>
+      (function () {
+        var tema;
+        try { tema = localStorage.getItem("med-calendario:tema"); } catch (e) {}
+        if (tema === "dark") {
+          tema = "midnight";
+          try { localStorage.setItem("med-calendario:tema", "midnight"); } catch (e) {}
+        }
+        if (!tema) {
+          tema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "midnight" : "light";
+        }
+        if (tema !== "light") {
+          document.documentElement.setAttribute("data-theme", tema);
+        }
+      })();
+    </script>
   </head>
   <body class="min-h-screen font-body text-ink antialiased">
     <slot />
