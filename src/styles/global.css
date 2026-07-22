@@ -10,6 +10,8 @@
   --color-clay: #c97b5a;
   --color-slate: #556360;
   --color-surface: #ffffff;
+  --color-nota: #3d8b7a;
+  --color-nota-text: #fff;
 
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
@@ -43,6 +45,8 @@ h1, h2, h3, h4, h5, h6,
   --color-clay: #f472b6;
   --color-slate: #8b83a0;
   --color-surface: #181429;
+  --color-nota: #a78bfa;
+  --color-nota-text: #fff;
 }
 
 [data-theme="ocean"] {
@@ -55,6 +59,8 @@ h1, h2, h3, h4, h5, h6,
   --color-clay: #fb923c;
   --color-slate: #7a8d99;
   --color-surface: #121b22;
+  --color-nota: #22d3ee;
+  --color-nota-text: #070d12;
 }
 
 [data-theme="ruby"] {
@@ -67,6 +73,8 @@ h1, h2, h3, h4, h5, h6,
   --color-clay: #fbbf24;
   --color-slate: #8a7a7e;
   --color-surface: #1a1416;
+  --color-nota: #fb7185;
+  --color-nota-text: #fff;
 }
 
 [data-theme="amber"] {
@@ -79,6 +87,8 @@ h1, h2, h3, h4, h5, h6,
   --color-clay: #fb923c;
   --color-slate: #8a877a;
   --color-surface: #1a1714;
+  --color-nota: #f59e0b;
+  --color-nota-text: #0f0d0a;
 }
 
 [data-theme="plum"] {
@@ -91,6 +101,8 @@ h1, h2, h3, h4, h5, h6,
   --color-clay: #c084fc;
   --color-slate: #8a7a82;
   --color-surface: #1a1416;
+  --color-nota: #f472b6;
+  --color-nota-text: #fff;
 }
 
 /* --- Etiquetas (tags) --- */
@@ -132,6 +144,14 @@ h1, h2, h3, h4, h5, h6,
 .tag-pill--chip:focus-visible {
   outline: 2px solid var(--color-moss);
   outline-offset: 2px;
+}
+
+.tag-pill--nota {
+  background-color: var(--color-nota);
+  color: var(--color-nota-text);
+}
+.tag-pill--nota svg {
+  flex-shrink: 0;
 }
 
 /* --- Celdas del calendario --- */
@@ -1070,25 +1090,12 @@ h1, h2, h3, h4, h5, h6,
   color: var(--color-ink);
 }
 
-/* --- Indicador de nota en calendario --- */
-.celda-dia__nota-indicator {
-  font-size: 0.5rem;
-  line-height: 1;
-  opacity: 0.5;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-@media (min-width: 640px) {
-  .celda-dia__nota-indicator {
-    font-size: 0.55rem;
-  }
-}
-
+/* --- Indicador de nota en mini calendario --- */
 .mini-celda__nota {
   width: 3px;
   height: 3px;
   border-radius: 9999px;
-  background-color: var(--color-clay);
+  background-color: var(--color-nota);
   flex-shrink: 0;
 }
 
