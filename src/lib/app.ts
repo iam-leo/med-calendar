@@ -1,5 +1,5 @@
 import type { Item } from "./types";
-import { cargarEstado, guardarItems, guardarTomas, generarId, cargarTema, guardarTema } from "./storage";
+import { cargarEstado, guardarItems, guardarTomas, generarId, cargarTema, guardarTema, guardarNotas } from "./storage";
 import { CATEGORIAS_PRESET, EMOJIS_DISPONIBLES, COLORES_DISPONIBLES } from "./presets";
 import { NOMBRES_MES, NOMBRES_DIA_CORTO, generarGrillaMes, aClaveFecha } from "./fechas";
 import { colorTextoLegible, escaparHTML } from "./color";
@@ -95,6 +95,7 @@ export function iniciarApp(): void {
     grillaCalendario.innerHTML = celdas
       .map((celda) => {
         const tomasDelDia = estado.tomas.filter((t) => t.fecha === celda.clave && t.dosis.length > 0);
+        const tieneNota = !!(estado.notas && estado.notas[celda.clave]);
         const tagsHTML = tomasDelDia
           .map((t) => {
             const item = estado.items.find((i) => i.id === t.itemId);
@@ -123,6 +124,7 @@ export function iniciarApp(): void {
         return `<button type="button" class="${clasesCelda}" data-fecha="${celda.clave}" aria-label="Ver tomas del día ${celda.numero}">
             <span class="celda-dia__numero">${celda.numero}</span>
             <span class="celda-dia__tags">${tagsHTML}</span>
+            ${tieneNota ? '<span class="celda-dia__nota-indicator" title="Tiene anotación" aria-label="Tiene anotación">📝</span>' : ""}
           </button>`;
       })
       .join("");
@@ -137,6 +139,7 @@ export function iniciarApp(): void {
     miniCalendario.innerHTML = celdas
       .map((celda) => {
         const tieneActividad = estado.tomas.some((t) => t.fecha === celda.clave && t.dosis.length > 0);
+        const tieneNota = !!(estado.notas && estado.notas[celda.clave]);
         const seleccionado = celda.clave === fechaSeleccionada;
         const clases = [
           "mini-celda",
@@ -149,6 +152,7 @@ export function iniciarApp(): void {
         return `<button type="button" class="${clases}" data-fecha="${celda.clave}" aria-label="Día ${celda.numero}">
             <span class="mini-celda__numero">${celda.numero}</span>
             ${tieneActividad ? '<span class="mini-celda__punto"></span>' : ""}
+            ${tieneNota ? '<span class="mini-celda__nota"></span>' : ""}
           </button>`;
       })
       .join("");
@@ -563,6 +567,27 @@ export function iniciarApp(): void {
       })
       .join("");
 
+    // Anotación general del día (una sola, al final)
+    if (fechaSeleccionada) {
+      const notaDelDia = estado.notas?.[fechaSeleccionada] ?? "";
+      if (notaDelDia) {
+        html += `<div class="anotacion">
+          <p class="anotacion__label">Anotación del día</p>
+          <div class="anotacion__texto">${escaparHTML(notaDelDia)}</div>
+          <button type="button" class="anotacion-btn-editar" data-anotacion-editar>Editar</button>
+        </div>`;
+      } else {
+        html += `<div class="anotacion">
+          <label class="anotacion__label" for="anotacion-dia">Anotación del día (opcional)</label>
+          <div class="anotacion__wrapper">
+            <textarea id="anotacion-dia" class="anotacion-textarea" data-anotacion-dia maxlength="140" rows="2" placeholder="Ej: Me olvidé / No lo tenía disponible..."></textarea>
+            <span class="anotacion-contador">0/140</span>
+          </div>
+          <button type="button" class="anotacion-btn-guardar" data-anotacion-guardar>Guardar</button>
+        </div>`;
+      }
+    }
+
     container.innerHTML = html;
 
     // --- Event listeners ---
@@ -656,6 +681,49 @@ export function iniciarApp(): void {
         });
       }
     }
+
+    // --- Anotación del día: contador + guardar + editar ---
+    const textareaNota = container.querySelector<HTMLTextAreaElement>("[data-anotacion-dia]");
+    const btnGuardarNota = container.querySelector<HTMLButtonElement>("[data-anotacion-guardar]");
+    if (textareaNota && btnGuardarNota) {
+      textareaNota.addEventListener("input", () => {
+        const valor = textareaNota.value;
+        const contador = textareaNota.closest(".anotacion__wrapper")?.querySelector<HTMLSpanElement>(".anotacion-contador");
+        if (contador) {
+          contador.textContent = `${valor.length}/140`;
+          contador.className = `anotacion-contador ${valor.length > 112 ? (valor.length >= 140 ? "anotacion-contador--rojo" : "anotacion-contador--naranja") : ""}`;
+        }
+      });
+      btnGuardarNota.addEventListener("click", () => {
+        if (!fechaSeleccionada) return;
+        const valor = textareaNota.value.trim();
+        if (!estado.notas) estado.notas = {};
+        if (valor) {
+          estado.notas[fechaSeleccionada] = valor;
+        } else {
+          delete estado.notas[fechaSeleccionada];
+        }
+        guardarNotas(estado.notas);
+        renderGrillaCalendario();
+        renderMiniCalendario();
+        actualizarTomasDia();
+      });
+    }
+    container.querySelectorAll<HTMLButtonElement>("[data-anotacion-editar]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!fechaSeleccionada) return;
+        const valor = estado.notas?.[fechaSeleccionada] ?? "";
+        delete estado.notas?.[fechaSeleccionada];
+        guardarNotas(estado.notas ?? {});
+        actualizarTomasDia();
+        // Pre-llenar el textarea con el valor anterior
+        const textarea = container.querySelector<HTMLTextAreaElement>("[data-anotacion-dia]");
+        if (textarea && valor) {
+          textarea.value = valor;
+          textarea.dispatchEvent(new Event("input"));
+        }
+      });
+    });
 
     // Enter en inline editing
     const manejarEnterEditar = (el: HTMLElement) => {

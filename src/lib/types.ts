@@ -35,6 +35,8 @@ export interface Toma {
 export interface EstadoApp {
   items: Item[];
   tomas: Toma[];
+  /** Anotaciones generales por fecha (clave: YYYY-MM-DD, valor: texto, máx 140 chars) */
+  notas?: Record<string, string>;
 }
 
 /** Preset rápido al crear un ítem nuevo. */

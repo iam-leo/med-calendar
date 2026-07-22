@@ -3,6 +3,7 @@ import type { Dosis, EstadoApp, Item, Toma } from "./types";
 const CLAVE_ITEMS = "med-calendario:items";
 const CLAVE_TOMAS = "med-calendario:tomas";
 const CLAVE_TEMA = "med-calendario:tema";
+const CLAVE_NOTAS = "med-calendario:notas";
 
 function leerJSON<T>(clave: string, porDefecto: T): T {
   if (typeof localStorage === "undefined") return porDefecto;
@@ -32,7 +33,9 @@ export function cargarEstado(): EstadoApp {
     return t as Toma;
   });
 
-  return { items, tomas };
+  const notas = leerJSON<Record<string, string>>(CLAVE_NOTAS, {});
+
+  return { items, tomas, notas };
 }
 
 export function guardarItems(items: Item[]): void {
@@ -58,6 +61,10 @@ export function cargarTema(): string {
 export function guardarTema(tema: string): void {
   if (typeof localStorage === "undefined") return;
   localStorage.setItem(CLAVE_TEMA, tema);
+}
+
+export function guardarNotas(notas: Record<string, string>): void {
+  escribirJSON(CLAVE_NOTAS, notas);
 }
 
 export function generarId(): string {
