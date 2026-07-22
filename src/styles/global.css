@@ -964,8 +964,8 @@ h1, h2, h3, h4, h5, h6,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.4rem;
-  padding: 0.25rem 0.6rem;
+  height: 1.5rem;
+  padding: 0 0.6rem;
   border: 1px solid var(--color-mist);
   border-radius: 0.4rem;
   background-color: transparent;
@@ -984,6 +984,90 @@ h1, h2, h3, h4, h5, h6,
 .anotacion-btn-editar:focus-visible {
   outline: 2px solid var(--color-moss);
   outline-offset: 2px;
+}
+
+.anotacion__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+}
+
+.anotacion-btn-eliminar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--color-mist);
+  border-radius: 0.4rem;
+  background-color: transparent;
+  color: var(--color-slate);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background-color 0.12s;
+}
+.anotacion-btn-eliminar:hover {
+  border-color: var(--color-clay);
+  color: var(--color-clay);
+  background-color: rgba(201, 123, 90, 0.08);
+}
+.anotacion-btn-eliminar:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
+}
+
+.anotacion-confirmar-texto {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.anotacion-confirmar-botones {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.anotacion-btn-confirmar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  border: none;
+  border-radius: 0.35rem;
+  background-color: var(--color-clay);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+.anotacion-btn-confirmar:hover {
+  background-color: #b56540;
+}
+
+.anotacion-btn-cancelar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--color-mist);
+  border-radius: 0.35rem;
+  background-color: transparent;
+  color: var(--color-slate);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+.anotacion-btn-cancelar:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
 }
 
 /* --- Indicador de nota en calendario --- */

@@ -574,7 +574,10 @@ export function iniciarApp(): void {
         html += `<div class="anotacion">
           <p class="anotacion__label">Anotación del día</p>
           <div class="anotacion__texto">${escaparHTML(notaDelDia)}</div>
-          <button type="button" class="anotacion-btn-editar" data-anotacion-editar>Editar</button>
+          <div class="anotacion__acciones">
+            <button type="button" class="anotacion-btn-editar" data-anotacion-editar>Editar</button>
+            <button type="button" class="anotacion-btn-eliminar" data-anotacion-eliminar>Eliminar</button>
+          </div>
         </div>`;
       } else {
         html += `<div class="anotacion">
@@ -722,6 +725,31 @@ export function iniciarApp(): void {
           textarea.value = valor;
           textarea.dispatchEvent(new Event("input"));
         }
+      });
+    });
+
+    // Eliminar nota con confirmación
+    container.querySelectorAll<HTMLButtonElement>("[data-anotacion-eliminar]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!fechaSeleccionada) return;
+        const accionDiv = btn.closest(".anotacion__acciones");
+        if (!accionDiv) return;
+        accionDiv.innerHTML = `<span class="anotacion-confirmar-texto">¿Eliminar nota?</span>
+          <div class="anotacion-confirmar-botones">
+            <button type="button" class="anotacion-btn-confirmar" data-anotacion-confirmar-eliminar>Sí</button>
+            <button type="button" class="anotacion-btn-cancelar" data-anotacion-cancelar-eliminar>Cancelar</button>
+          </div>`;
+        accionDiv.querySelector<HTMLButtonElement>("[data-anotacion-cancelar-eliminar]")!.addEventListener("click", () => {
+          actualizarTomasDia();
+        });
+        accionDiv.querySelector<HTMLButtonElement>("[data-anotacion-confirmar-eliminar]")!.addEventListener("click", () => {
+          if (!fechaSeleccionada) return;
+          delete estado.notas?.[fechaSeleccionada];
+          guardarNotas(estado.notas ?? {});
+          renderGrillaCalendario();
+          renderMiniCalendario();
+          actualizarTomasDia();
+        });
       });
     });
 
