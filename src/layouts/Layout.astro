@@ -3,9 +3,17 @@ import "../styles/global.css";
 
 interface Props {
   titulo?: string;
+  descripcion?: string;
 }
 
-const { titulo = "Calendario de medicamentos" } = Astro.props;
+const {
+  titulo = "Calendario de medicamentos y suplementos",
+  descripcion = "Organizá tus medicamentos y suplementos con un calendario visual. Registrá dosis, horarios y mantené el control de tu salud día a día.",
+} = Astro.props;
+
+const urlBase = "https://med-calendar.netlify.app";
+const urlCompleta = `${urlBase}/`;
+const imagenOG = `${urlBase}/med-calendar-og.webp`;
 ---
 
 <!doctype html>
@@ -15,7 +23,33 @@ const { titulo = "Calendario de medicamentos" } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO básico -->
     <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={urlCompleta} />
+    <meta name="author" content="Leo Ss" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:image" itemprop="image" content={imagenOG} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content={urlCompleta} />
+    <meta property="og:site_name" content="Med Calendar" />
+    <meta property="og:locale" content="es_AR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:domain" content="med-calendar.netlify.app" />
+    <meta name="twitter:url" content={urlCompleta} />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={imagenOG} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -40,6 +74,10 @@ const { titulo = "Calendario de medicamentos" } = Astro.props;
     </script>
   </head>
   <body class="min-h-screen font-body text-ink antialiased">
+    <link itemprop="thumbnailUrl" href={imagenOG} />
+    <span itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
+      <link itemprop="url" href={imagenOG} />
+    </span>
     <slot />
   </body>
 </html>
