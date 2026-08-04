@@ -1,0 +1,17 @@
+---
+import Cross from "../icons/Cross.astro";
+---
+
+<div>
+  <p class="mb-3 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-slate"><Cross size={12} /> Tu botiquín</p>
+  <div id="estado-vacio-items" class="empty-state">
+    <div class="empty-state__grid">
+      <span>💊</span><span>💉</span><span>🌿</span>
+      <span>🧴</span><span>🩹</span><span>🫙</span>
+      <span>💧</span><span>🌸</span><span>🍃</span>
+    </div>
+    <p class="empty-state__title">Todavía no tenés medicamentos registrados</p>
+    <p class="empty-state__desc">Agregá tu primer medicamento o suplemento para empezar a registrar tus tomas diarias.</p>
+  </div>
+  <div id="lista-items" class="flex flex-wrap gap-2"></div>
+</div>
