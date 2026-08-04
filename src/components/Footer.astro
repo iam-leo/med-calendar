@@ -1,0 +1,33 @@
+---
+import Github from "../icons/Github.astro";
+---
+
+<footer class="app-footer">
+  <span id="footer-frase" class="app-footer__frase"></span>
+  <a href="https://github.com/iam-leo" target="_blank" rel="noopener noreferrer" class="app-footer__github">
+    <Github size={14} /> By Leo Ss
+  </a>
+</footer>
+
+<script>
+  const frases = [
+    "✨ Cada día es una nueva oportunidad para cuidarte",
+    "💪 La constancia es la clave del cambio",
+    "🌿 Pequeños pasos llevan a grandes resultados",
+    "💛 Tu salud es tu mayor tesoro",
+    "🌻 Hoy es un buen día para empezar",
+    "🌱 Cada vez que cuidas de ti, florecés",
+    "⭐ La disciplina supera al talento",
+    "🦋 Transformate con paciencia",
+    "🔥 Seguí adelante, ya recorriste un largo camino",
+    "☀️ Lo mejor está por venir",
+    "🍀 La gratitud transforma lo que tenemos en suficiente",
+    "💫 Vos podés con todo lo que te proponés",
+  ];
+  const fraseEl = document.getElementById("footer-frase");
+  if (fraseEl) {
+    const ahora = new Date();
+    const idx = Math.floor(Math.random() * frases.length);
+    fraseEl.textContent = `${ahora.getFullYear()} | ${frases[idx]}`;
+  }
+</script>
