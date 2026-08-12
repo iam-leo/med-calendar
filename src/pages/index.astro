@@ -10,9 +10,7 @@ import CalendarDesktop from "../components/CalendarDesktop.astro";
 import Stats from "../components/Stats.astro";
 import ItemModal from "../components/ItemModal.astro";
 import DayModal from "../components/DayModal.astro";
-import ChevronLeft from "../icons/ChevronLeft.astro";
-import ChevronRight from "../icons/ChevronRight.astro";
-import Plus from "../icons/Plus.astro";
+import MobileView from "../components/MobileView.astro";
 ---
 
 <Layout titulo="Calendario de medicamentos y suplementos">
@@ -33,45 +31,7 @@ import Plus from "../icons/Plus.astro";
     <CalendarDesktop />
 
     <!-- Vista móvil -->
-    <div id="vista-mobile" class="sm:hidden">
-      <!-- Mini calendario compacto -->
-      <div class="rounded-2xl border border-mist bg-surface p-2">
-        <div id="encabezado-dias-mobile" class="mb-1 grid grid-cols-7 gap-0.5"></div>
-        <div id="mini-calendario" class="grid grid-cols-7 gap-0.5"></div>
-      </div>
-
-      <!-- Estado: seleccioná un día -->
-      <div id="estado-selecciona-dia" class="flex flex-col items-center gap-2 py-8 text-center">
-        <span class="text-3xl">👆</span>
-        <p class="text-sm font-medium text-ink">Seleccioná un día para ver tus tomas</p>
-        <p class="text-xs text-slate">Tocá cualquier día del calendario para registrar o revisar tus dosis.</p>
-      </div>
-
-      <!-- Detalle del día (inline) -->
-      <div id="detalle-dia-mobile" class="hidden mt-3 rounded-2xl border border-mist bg-surface p-3">
-        <div class="mb-2 flex items-center justify-between">
-          <button
-            id="btn-dia-anterior" type="button" aria-label="Día anterior"
-            class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist"
-          ><ChevronLeft size={16} /></button>
-          <h3 id="dia-mobile-titulo" class="font-display text-sm font-semibold capitalize text-ink">&nbsp;</h3>
-          <button
-            id="btn-dia-siguiente" type="button" aria-label="Día siguiente"
-            class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-paper-alt text-ink transition hover:bg-mist"
-          ><ChevronRight size={16} /></button>
-        </div>
-        <div id="lista-tomas-mobile" class="flex flex-col"></div>
-        <div id="estado-vacio-dia-mobile" class="hidden flex-col items-center gap-2 py-4 text-center">
-          <span class="text-2xl">📋</span>
-          <p class="text-sm font-medium text-ink">Tu botiquín está vacío</p>
-          <p class="text-xs text-slate">Agregá un medicamento o suplemento para empezar a registrar tus tomas.</p>
-          <button
-            id="btn-agregar-desde-vacio-mobile" type="button"
-            class="flex items-center gap-1.5 rounded-lg bg-moss px-3.5 py-1.5 text-xs font-semibold text-paper transition hover:bg-moss-dark"
-          ><Plus size={14} /> Agregar medicamento</button>
-        </div>
-      </div>
-    </div>
+    <MobileView />
 
     <!-- Estadísticas -->
     <Stats />
