@@ -1,0 +1,85 @@
+---
+import X from "../icons/X.astro";
+import Trash2 from "../icons/Trash2.astro";
+import Check from "../icons/Check.astro";
+---
+
+<div id="modal-item" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-item-titulo">
+  <div class="modal-overlay__content w-full max-w-md p-5 sm:p-6">
+    <div class="mb-4 flex items-center justify-between">
+      <h3 id="modal-item-titulo" class="font-display text-lg font-semibold">Agregar ítem</h3>
+      <button
+        id="btn-cerrar-modal-item"
+        type="button"
+        aria-label="Cerrar"
+        class="flex h-8 w-8 items-center justify-center rounded-lg text-slate hover:bg-paper-alt"
+      >
+        <X size={16} />
+      </button>
+    </div>
+
+    <form id="form-item" class="flex flex-col gap-4">
+      <div>
+        <label for="item-nombre" class="mb-1.5 block text-sm font-medium text-ink">Nombre</label>
+        <input
+          id="item-nombre"
+          type="text"
+          required
+          placeholder='Ej: "Ibuprofeno 400mg"'
+          class="w-full rounded-lg border border-mist px-3 py-2 text-sm outline-none focus:border-moss"
+        />
+      </div>
+
+      <div>
+        <p class="mb-1.5 block text-sm font-medium text-ink">Categoría</p>
+        <div id="presets-categoria" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div id="seccion-emoji" class="hidden">
+        <p class="mb-1.5 block text-sm font-medium text-ink">Elegí un emoji</p>
+        <div id="picker-emoji" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
+      <div>
+        <p class="mb-1.5 block text-sm font-medium text-ink">Color de la etiqueta</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <div id="picker-color" class="flex flex-wrap gap-2"></div>
+          <input
+            id="color-personalizado"
+            type="color"
+            value="#2F5D53"
+            aria-label="Color personalizado"
+            class="h-8 w-8 cursor-pointer rounded-full border-0 bg-transparent p-0"
+          />
+        </div>
+      </div>
+
+      <div>
+        <p class="mb-1.5 block text-sm font-medium text-ink">Vista previa</p>
+        <span id="vista-previa-tag" class="tag-pill" style="font-size:0.9rem;padding:0.4rem 0.9rem;"></span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-2">
+        <button
+          id="btn-eliminar-item"
+          type="button"
+          class="hidden flex items-center gap-1.5 rounded-lg border border-clay px-3 py-2 text-sm font-medium text-clay hover:bg-clay/10"
+        >
+          <Trash2 size={16} /> Eliminar
+        </button>
+        <div class="ml-auto flex gap-2">
+          <button
+            id="btn-cancelar-item"
+            type="button"
+            class="rounded-lg border border-mist px-4 py-2 text-sm font-medium text-slate hover:bg-paper-alt"
+          >
+            Cancelar
+          </button>
+          <button type="submit" class="flex items-center gap-1.5 rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper hover:bg-moss-dark">
+            <Check size={16} /> Guardar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
